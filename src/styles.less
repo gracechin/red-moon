@@ -1,0 +1,148 @@
+@backgroundColor: #414770;
+@textColor: #F2F3D9;
+@textButtonColor: #FADF7F;
+@textButtonHoverColor: #FADF7F;
+@gridLineColor: #7698B3;
+@graphLineColor: #FB9F89;
+@chartBackgroundColor: white;
+@tableBackgroundColor:white;
+@columnHoverColor: #FB9F89;
+
+@chartHeight: 50%;
+@spacingUnit: 10px;
+
+.circleMixin(@radius, @border: 0) {
+  width: 2 * @radius;
+	height: 2 * @radius;
+	-moz-border-radius: @radius;
+	-webkit-border-radius: @radius;
+	border-radius: @radius;
+  margin-left: -@radius;
+  margin-top: -@radius;
+  border: @border;
+}
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  color: @textColor;
+  background: @backgroundColor;
+  background-color: @backgroundColor;
+  font-family: 'Segoe UI', 'Helvetica', sans-serif;
+}
+
+#app {
+  padding: 50px 15%;
+  width: 100%;
+}
+
+.Graph {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+  .graph-container {
+    border: 1px solid @gridLineColor
+  }
+  .graph-line {
+    fill: none;
+    stroke-width: 3;
+    stroke: @graphLineColor
+  }
+  .axis-grid line {
+    stroke: @gridLineColor
+  }
+}
+
+.synchronised-graph-table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 80vh;
+
+  .navigation-container {
+    display: flex;
+    height: 30px;
+    margin: @spacingUnit 0;
+    justify-content: space-between;
+
+    .btn {
+      background-color: transparent;
+      border: none;
+      padding: 5px;
+      font-weight: bold;
+      color: @textButtonColor
+    }
+    .btn:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    background: @chartBackgroundColor;
+    box-sizing: border-box;
+  }
+
+  .synchronised-graph {
+    position: absolute;
+  }
+
+  .chart-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    .column-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .column {
+      background-color: @columnHoverColor;
+      display: flex;
+      flex: 1;
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+
+      &.active {
+        opacity: 0.3  ;
+      }
+    }
+  }
+  
+  .Table {
+    display: flex;
+    position: relative;
+    width: 100%;
+    background: @tableBackgroundColor;
+
+    .table-row-heading {
+      position: absolute;
+      right: 100%;
+      text-align: right;
+      padding-right: @spacingUnit * 0.5;
+    }
+
+    .table-column {
+      color: black;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      transition: all 0.2s;
+      overflow: hidden;
+      text-align: center;
+
+      &.active {
+        background-color: @columnHoverColor;
+      }
+    }
+  }
+}
