@@ -10,7 +10,7 @@ export function SimpleModal({ show, heading, children, footer, onHide }) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton closeVariant="white">
         <Modal.Title id="contained-modal-title-vcenter">{heading}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
