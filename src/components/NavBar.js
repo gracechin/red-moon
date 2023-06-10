@@ -1,15 +1,22 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import Nav from "react-bootstrap/Nav";
+import { Nav, Navbar } from "react-bootstrap";
 
-function NavBar() {
+function NavBar({ onReset, onAdd }) {
   return (
     <>
-      <Nav variant="pills" defaultActiveKey="/">
-        <Nav.Item>
-          <Link to="/">Home</Link>
-        </Nav.Item>
-      </Nav>
+      <Navbar>
+        <Navbar.Brand href="#home" style={{ color: "white" }}>
+          Red Moon 🌕
+        </Navbar.Brand>
+        <Nav>
+          <Nav.Link style={{ color: "white" }} onClick={onReset}>
+            Clear
+          </Nav.Link>
+          <Nav.Link style={{ color: "white" }} onClick={onAdd}>
+            + Entry
+          </Nav.Link>
+        </Nav>
+      </Navbar>
     </>
   );
 }

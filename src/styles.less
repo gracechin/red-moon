@@ -1,12 +1,15 @@
 @backgroundColor: #414770;
 @textColor: #F2F3D9;
-@textButtonColor: #FADF7F;
-@textButtonHoverColor: #FADF7F;
-@gridLineColor: #7698B3;
-@graphLineColor: #FB9F89;
+@tableTextColor: #4A1F41;
+@tableHoverTextColor: white;
+@textButtonColor: white;
+@gridLineColor: #FBCBE7;
+@graphLineColor: #FA9DC6;
 @chartBackgroundColor: white;
 @tableBackgroundColor:white;
-@columnHoverColor: #FB9F89;
+@columnHoverColor: #F85966;
+@dotOutlineColor:#F85966; 
+@dotColor: #F85966;
 
 @chartHeight: 50%;
 @spacingUnit: 10px;
@@ -77,8 +80,9 @@ html, body, #app {
       font-weight: bold;
       color: @textButtonColor
     }
-    .btn:hover {
-      text-decoration: underline;
+
+    .btn:disabled {
+      opacity: 0.5    
     }
   }
   
@@ -99,21 +103,42 @@ html, body, #app {
     width: 100%;
     height: 100%;
 
+    .dots-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+
+      .dot {
+        .circleMixin(6px, 4px solid @graphLineColor);
+        position: absolute;
+        transition: opacity 0.3s ease-out;
+        background: @graphLineColor;
+        
+        &.active {
+          .circleMixin(6px, 4px solid @dotOutlineColor);
+          background: @dotColor;
+        }
+      }
+    }
+
     .column-container {
+      position: absolute;
       display: flex;
       width: 100%;
       height: 100%;
-    }
 
-    .column {
-      background-color: @columnHoverColor;
-      display: flex;
-      flex: 1;
-      opacity: 0;
-      transition: opacity 0.3s ease-out;
-
-      &.active {
-        opacity: 0.3  ;
+      .column {
+        background-color: @columnHoverColor;
+        display: flex;
+        flex: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
+  
+        &.active {
+          opacity: 0.2  ;
+        }
       }
     }
   }
@@ -132,7 +157,8 @@ html, body, #app {
     }
 
     .table-column {
-      color: black;
+      color: @tableTextColor;
+      font-size: small;
       display: flex;
       flex: 1;
       flex-direction: column;
@@ -141,7 +167,9 @@ html, body, #app {
       text-align: center;
 
       &.active {
-        background-color: @columnHoverColor;
+        background-color: tint(@columnHoverColor, 25%);
+        color: @tableHoverTextColor;
+        font-weight: bold;
       }
     }
   }
