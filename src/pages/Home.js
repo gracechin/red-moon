@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Col,
@@ -11,7 +11,6 @@ import {
 import { Chart as ChartJS, registerables } from "chart.js";
 ChartJS.register(...registerables);
 import { Chart, getElementAtEvent } from "react-chartjs-2";
-
 import {
   storeEntry,
   clearStoredEntries,
@@ -19,33 +18,10 @@ import {
 } from "../utils/dataStorage";
 import { getCurrentDate, getCurrentTime } from "../utils/dateTime";
 import { SimpleModal } from "../components/Modal.js";
-import { SynchronisedGraphTable } from "../components/Chart";
+import { PeriodChart } from "../components/Chart";
+import NavBar from "../components/NavBar";
 
 // Data
-
-const DUMMY_DATA = [
-  {
-    graph: { x: 1, y: 30 },
-    table: [
-      { name: "Date", value: "06" },
-      { name: "Temp", value: "30" },
-    ],
-  },
-  {
-    graph: { x: 2, y: 25 },
-    table: [
-      { name: "Date", value: "07" },
-      { name: "Temp", value: "25" },
-    ],
-  },
-  {
-    graph: { x: 3, y: 27 },
-    table: [
-      { name: "Date", value: "08" },
-      { name: "Temp", value: "37" },
-    ],
-  },
-];
 
 const DAILY_SITUATION_OPTIONS = [
   {
@@ -143,58 +119,23 @@ export function DataEntry() {
   );
 }
 
-const DAYS_OF_WEEK = ["🌞", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-const formatDateLabel = (dateStr) => {
-  const dayIdx = new Date(dateStr).getDay();
-  const [_yyyy, mm, dd] = dateStr.split("-");
-  return `${[dd, mm].join("/")} ${DAYS_OF_WEEK[dayIdx]}`;
-};
-
-const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
-  return {
-    graph: { x: idx, y: parseInt(Temperature) },
-    table: [
-      { name: "Day", value: `Day ${idx + 1}` },
-      { name: "Date", value: formatDateLabel(Date) },
-      { name: "Time", value: `🕔 ${Time}` },
-      { name: "Temp", value: `${Temperature}°C` },
-      { name: "Situation", value: Situation },
-    ],
-  };
-};
-
 function HomePage() {
   const [modalShow, setModalShow] = useState(false);
-  const [data, setData] = useState([]);
+  const [entries, setEntries] = useState(getStoredEntries());
 
   const refreshData = () => {
-    const newData = getStoredEntries().map(transformEntryToData);
-    console.log(newData);
-    setData(newData);
+    setEntries(getStoredEntries());
   };
 
   useEffect(() => {
-    refreshData();
+    // refreshData();
   }, []);
 
   return (
     <Container>
-      <Row>
-        <Col>
-          <Button variant="primary" onClick={clearStoredEntries}>
-            Clear Data
-          </Button>
-        </Col>
-        <Col>
-          <Button variant="primary" onClick={() => setModalShow(true)}>
-            +
-          </Button>
-        </Col>
-      </Row>
-      <SynchronisedGraphTable
-        data={data}
-        yRange={[35.5, 37.5]}
+      <NavBar onReset={clearStoredEntries} onAdd={() => setModalShow(true)} />
+      <PeriodChart
+        entries={entries}
         onClickColumn={() => setModalShow(true)}
         hideTableHeading={true}
       />

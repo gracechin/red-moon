@@ -2,7 +2,15 @@ import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 
-function SynchronisedGraph({ width, height, data, xRange, yRange }) {
+function SynchronisedGraph({
+  width,
+  height,
+  data,
+  xDomian,
+  yDomain,
+  showXGridlines,
+  showYGridlines,
+}) {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -14,27 +22,17 @@ function SynchronisedGraph({ width, height, data, xRange, yRange }) {
 
   const drawGraph = () => {
     const svg = d3.select(svgRef.current);
-    const xValues = data.map((d) => d.x);
-    const yValues = data.map((d) => d.y);
-    const [minXValue, maxXValue] = xRange || [
-      Math.min(...xValues),
-      Math.max(...xValues),
-    ];
-    const [minYValue, maxYValue] = yRange || [
-      Math.min(...yValues),
-      Math.max(...yValues),
-    ];
-    const numCols = xValues.length;
-    const colWidth = width / xValues.length;
+    const numCols = data.length;
+    const colWidth = width / data.length;
     const chartWidth = colWidth * numCols;
     const halfColWidth = colWidth * 0.5;
     const scaleX = d3
       .scaleLinear()
-      .domain([minXValue, maxXValue])
+      .domain(xDomian || d3.extent(data, (d) => d.x))
       .range([halfColWidth, chartWidth - halfColWidth]);
     const scaleY = d3
       .scaleLinear()
-      .domain([Math.floor(minYValue), Math.ceil(maxYValue)])
+      .domain(yDomain || d3.extent(data, (d) => d.y))
       .range([height, 0]);
 
     // Draw graph container
@@ -44,22 +42,22 @@ function SynchronisedGraph({ width, height, data, xRange, yRange }) {
       .attr("height", height);
 
     // Draw axis grid
-    const xAxisGrid = d3
-      .axisBottom(scaleX)
-      .tickSize(-height)
-      .tickFormat("")
-      .ticks(maxXValue - minXValue);
-    const yAxisGrid = d3
-      .axisLeft(scaleY)
-      .tickSize(-chartWidth)
-      .tickFormat("")
-      .ticks((maxYValue - minYValue) * 5);
-    svg
-      .append("g")
-      .attr("class", "x axis-grid")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxisGrid);
-    svg.append("g").attr("class", "y axis-grid").call(yAxisGrid);
+    if (showXGridlines) {
+      const xAxisGrid = d3.axisBottom(scaleX).tickSize(-height).tickFormat("");
+      svg
+        .append("g")
+        .attr("class", "x axis-grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxisGrid);
+    }
+
+    if (showYGridlines) {
+      const yAxisGrid = d3
+        .axisLeft(scaleY)
+        .tickSize(-chartWidth)
+        .tickFormat("");
+      svg.append("g").attr("class", "y axis-grid").call(yAxisGrid);
+    }
 
     // Draw graph line
     const line = d3
@@ -144,13 +142,34 @@ function SynchronisedTable({
 }
 
 const ChartOverlay = ({
+  yDomain,
+  width,
+  height,
   data,
   onChangeColumn,
   activeColumn,
   onClickColumn,
 }) => {
+  const colWidth = width / data.length;
+  const domain = yDomain || d3.extent(data, (d) => d.y);
+  const range = [height, 0];
+  const scaleY = d3.scaleLinear().domain(domain).range(range);
+
   return (
     <div className="chart-overlay">
+      <div className="dots-container">
+        {data.map(({ x, y }, i) => {
+          return (
+            <span
+              className={`dot ${activeColumn == i ? "active" : ""}`}
+              style={{
+                left: `${i * colWidth + colWidth * 0.5}px`,
+                top: `${scaleY(y)}px`,
+              }}
+            />
+          );
+        })}
+      </div>
       <div className="column-container">
         {data.map((_d, i) => (
           <div
@@ -165,15 +184,33 @@ const ChartOverlay = ({
   );
 };
 
-export function SynchronisedGraphTable({
-  onClickColumn,
-  data,
-  xRange,
-  yRange,
-  hideTableHeading,
-}) {
+const DAYS_OF_WEEK = ["🌞", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const formatDateLabel = (dateStr) => {
+  const dayIdx = new Date(dateStr).getDay();
+  const [_yyyy, mm, dd] = dateStr.split("-");
+  return `${[dd, mm].join("/")} ${DAYS_OF_WEEK[dayIdx]}`;
+};
+
+const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
+  return {
+    table1: [
+      { name: "Day", value: `Day ${idx + 1}` },
+      { name: "Date", value: formatDateLabel(Date) },
+      { name: "Time", value: `🕔 ${Time}` },
+    ],
+    graph: { x: idx, y: parseFloat(Temperature) * 10 },
+    table2: [
+      { name: "Temp", value: `${Temperature}°C` },
+      { name: "Situation", value: Situation },
+    ],
+  };
+};
+
+export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
   const MIN_COL_WIDTH = 50;
   const chartWrapperRef = useRef();
+  const yDomain = [350, 380];
   const [startIndex, setStartIndex] = useState(0);
   const [visibleData, setVisibleData] = useState([]);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
@@ -182,7 +219,7 @@ export function SynchronisedGraphTable({
   useEffect(() => {
     onResize();
     window.addEventListener("resize", () => onResize());
-  }, [data]);
+  }, [entries]);
 
   const onChangeColumn = ({ activeColumn }) => {
     setActiveColumn(activeColumn);
@@ -193,6 +230,7 @@ export function SynchronisedGraphTable({
       const { width, height } = chartWrapperRef.current.getBoundingClientRect();
       setChartSize({ width, height });
       const maxNumCols = Math.floor(width / MIN_COL_WIDTH);
+      const data = entries.map(transformEntryToData);
       const numColsVisible = Math.min(maxNumCols, data.length);
       setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
     }
@@ -203,29 +241,50 @@ export function SynchronisedGraphTable({
   };
 
   return (
-    !!data &&
-    data.length > 0 && (
+    !!entries &&
+    entries.length > 0 && (
       <div className="synchronised-graph-table">
         <div className="navigation-container">
-          <Button variant="primary" onClick={() => onNavigate(-1)}>
-            ⇐ Left
+          <Button
+            variant="primary"
+            onClick={() => onNavigate(-1)}
+            disabled={visibleData.length == entries.length || startIndex == 0}
+          >
+            ⇐
           </Button>
-          <Button variant="primary" onClick={() => onNavigate(1)}>
-            More ⇒
+          <Button
+            variant="primary"
+            onClick={() => onNavigate(1)}
+            disabled={
+              visibleData.length == entries.length ||
+              startIndex == entries.length - startIndex
+            }
+          >
+            ⇒
           </Button>
         </div>
+        <SynchronisedTable
+          rowLabelKey="x"
+          data={visibleData.map((d) => d.table1)}
+          width={chartSize.width}
+          activeColumn={activeColumn}
+          onChangeColumn={onChangeColumn}
+          onClickColumn={onClickColumn}
+          hideHeadingColumn={hideTableHeading}
+        />
         <div className="chart-container" ref={chartWrapperRef}>
           <SynchronisedGraph
             width={chartSize.width}
             height={chartSize.height}
             data={visibleData.map((d) => d.graph)}
-            xRange={xRange}
-            yRange={yRange}
+            yDomain={yDomain}
           />
           <ChartOverlay
+            yDomain={yDomain}
+            startIndex={startIndex}
             width={chartSize.width}
             height={chartSize.height}
-            data={visibleData}
+            data={visibleData.map((d) => d.graph)}
             activeColumn={activeColumn}
             onChangeColumn={onChangeColumn}
             onClickColumn={onClickColumn}
@@ -233,7 +292,7 @@ export function SynchronisedGraphTable({
         </div>
         <SynchronisedTable
           rowLabelKey="x"
-          data={visibleData.map((d) => d.table)}
+          data={visibleData.map((d) => d.table2)}
           width={chartSize.width}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
