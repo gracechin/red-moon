@@ -48,10 +48,24 @@ const DAILY_SITUATION_OPTIONS = [
 
 // UI
 
-function DailyPeriodForm({
+const PERIOD_ENTRY_MODE = {
+  EDIT: "Edit",
+  NEW: "New",
+};
+
+function PeriodEntryModal({
+  show,
+  onHide,
   onSubmit,
-  defaultData: { Situation: defSituation, Date: defDate, Temperature: defTemp },
+  defaultData: {
+    Situation: defSituation,
+    Date: defDate,
+    Time: defTime,
+    Temperature: defTemp,
+  },
+  mode,
 }) {
+  const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
@@ -62,57 +76,65 @@ function DailyPeriodForm({
   }
 
   return (
-    <Form method="post" onSubmit={handleSubmit}>
-      <Form.Group className="mb-3" controlId="formDate">
-        <Form.Label>Date</Form.Label>
-        <Form.Control
-          name="Date"
-          type="date"
-          defaultValue={defDate || getCurrentDate()}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formTemp">
-        <Form.Label>Basal Temperature</Form.Label>
-        <Row>
-          <Col>
+    <SimpleModal
+      show={show}
+      heading={!isAddNewMode && defDate ? `${defDate} Entry` : "Period entry"}
+      onHide={onHide}
+    >
+      <Form method="post" onSubmit={handleSubmit}>
+        {isAddNewMode && (
+          <Form.Group className="mb-3" controlId="formDate">
+            <Form.Label>Date</Form.Label>
             <Form.Control
-              name="Temperature"
-              type="float"
-              placeholder="Temp in °C"
-              defaultValue={defTemp || null}
+              name="Date"
+              type="date"
+              defaultValue={(!isAddNewMode && defDate) || getCurrentDate()}
             />
-          </Col>
-          <Col>
-            <Form.Control
-              name="Time"
-              type="time"
-              defaultValue={getCurrentTime()}
-            />
-          </Col>
-        </Row>
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formSituation">
-        <Form.Label>Daily Situation</Form.Label>
-        <br />
-        <ToggleButtonGroup
-          name="Situation"
-          type="radio"
-          defaultValue={defSituation || "Dry"}
-          className="mb-2"
-        >
-          {DAILY_SITUATION_OPTIONS.map((option, idx) => {
-            return (
-              <ToggleButton id={option.name} value={option.name} key={idx}>
-                {[option.icon, option.name].join(" ")}
-              </ToggleButton>
-            );
-          })}
-        </ToggleButtonGroup>
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
+          </Form.Group>
+        )}
+        <Form.Group className="mb-3" controlId="formTemp">
+          <Form.Label>Basal Temperature</Form.Label>
+          <Row>
+            <Col>
+              <Form.Control
+                name="Temperature"
+                type="float"
+                placeholder="Temp in °C"
+                defaultValue={(!isAddNewMode && defTemp) || null}
+              />
+            </Col>
+            <Col>
+              <Form.Control
+                name="Time"
+                type="time"
+                defaultValue={(!isAddNewMode && defTime) || getCurrentTime()}
+              />
+            </Col>
+          </Row>
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formSituation">
+          <Form.Label>Daily Situation</Form.Label>
+          <br />
+          <ToggleButtonGroup
+            name="Situation"
+            type="radio"
+            defaultValue={(!isAddNewMode && defSituation) || "Dry"}
+            className="mb-2"
+          >
+            {DAILY_SITUATION_OPTIONS.map((option, idx) => {
+              return (
+                <ToggleButton id={option.name} value={option.name} key={idx}>
+                  {[option.icon, option.name].join(" ")}
+                </ToggleButton>
+              );
+            })}
+          </ToggleButtonGroup>
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form>
+    </SimpleModal>
   );
 }
 
@@ -130,7 +152,10 @@ function HomePage() {
     <Container>
       <NavBar
         onReset={() => setShowDeleteConfirmModal(true)}
-        onAdd={() => setShowEntryModal(true)}
+        onAdd={() => {
+          setSelectedColumn(-1);
+          setShowEntryModal(true);
+        }}
       />
       <PeriodChart
         entries={entries}
@@ -140,23 +165,22 @@ function HomePage() {
         }}
         hideTableHeading={true}
       />
-      <SimpleModal
+      <PeriodEntryModal
         show={showEntryModal}
-        heading="Period entry"
         onHide={() => setShowEntryModal(false)}
-      >
-        <DailyPeriodForm
-          onSubmit={() => {
-            refreshData();
-            setShowEntryModal(false);
-          }}
-          defaultData={
-            selectedColumn > -1 && entries.length > 0
-              ? entries[selectedColumn]
-              : {}
-          }
-        />
-      </SimpleModal>
+        onSubmit={() => {
+          refreshData();
+          setShowEntryModal(false);
+        }}
+        defaultData={
+          selectedColumn > -1 && entries.length > 0
+            ? entries[selectedColumn]
+            : {}
+        }
+        mode={
+          selectedColumn > -1 ? PERIOD_ENTRY_MODE.EDIT : PERIOD_ENTRY_MODE.NEW
+        }
+      />
       <SimpleModal
         show={showDeleteConfirmModal}
         heading="Delete all data?"
