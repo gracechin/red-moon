@@ -48,14 +48,14 @@ const DAILY_SITUATION_OPTIONS = [
 
 // UI
 
-function DailyPeriodForm({ closeModal }) {
+function DailyPeriodForm({ onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
     storeEntry(formJson);
-    closeModal && closeModal();
+    onSubmit && onSubmit();
   }
 
   return (
@@ -108,46 +108,53 @@ function DailyPeriodForm({ closeModal }) {
   );
 }
 
-export function DataEntry() {
-  return (
-    <>
-      <p>
-        Start tracking your <code>Period🩸</code>.
-      </p>
-      <DailyPeriodForm />
-    </>
-  );
-}
-
 function HomePage() {
-  const [modalShow, setModalShow] = useState(false);
+  const [showEntryModal, setShowEntryModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [entries, setEntries] = useState(getStoredEntries());
 
   const refreshData = () => {
     setEntries(getStoredEntries());
   };
 
-  useEffect(() => {
-    // refreshData();
-  }, []);
-
   return (
     <Container>
-      <NavBar onReset={clearStoredEntries} onAdd={() => setModalShow(true)} />
+      <NavBar
+        onReset={() => setShowDeleteConfirmModal(true)}
+        onAdd={() => setShowEntryModal(true)}
+      />
       <PeriodChart
         entries={entries}
-        onClickColumn={() => setModalShow(true)}
+        onClickColumn={() => setShowEntryModal(true)}
         hideTableHeading={true}
       />
-      <Row>
-        <SimpleModal
-          show={modalShow}
-          heading="Period entry"
-          onHide={() => setModalShow(false)}
+      <SimpleModal
+        show={showEntryModal}
+        heading="Period entry"
+        onHide={() => setShowEntryModal(false)}
+      >
+        <DailyPeriodForm
+          onSubmit={() => {
+            refreshData();
+            setShowEntryModal(false);
+          }}
+        />
+      </SimpleModal>
+      <SimpleModal
+        show={showDeleteConfirmModal}
+        heading="Delete all data?"
+        onHide={() => setShowDeleteConfirmModal(false)}
+      >
+        <Button
+          variant="primary"
+          onClick={() => setShowDeleteConfirmModal(false)}
         >
-          <DailyPeriodForm closeModal={() => setModalShow(false)} />
-        </SimpleModal>
-      </Row>
+          Cancel
+        </Button>
+        <Button variant="secondary" onClick={clearStoredEntries}>
+          Delete
+        </Button>
+      </SimpleModal>
     </Container>
   );
 }
