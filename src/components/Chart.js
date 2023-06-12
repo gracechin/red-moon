@@ -255,6 +255,8 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
     setActiveColumn(activeColumn);
   };
 
+  const onClickCol = () => onClickColumn(activeColumn);
+
   const onResize = () => {
     if (!!chartWrapperRef.current) {
       const { width, height } = chartWrapperRef.current.getBoundingClientRect();
@@ -299,7 +301,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           width={chartSize.width}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
-          onClickColumn={onClickColumn}
+          onClickColumn={onClickCol}
           hideHeadingColumn={hideTableHeading}
         />
         <div className="chart-container" ref={chartWrapperRef}>
@@ -317,7 +319,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
             data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             activeColumn={activeColumn}
             onChangeColumn={onChangeColumn}
-            onClickColumn={onClickColumn}
+            onClickColumn={onClickCol}
           />
         </div>
         <SynchronisedTable
@@ -326,7 +328,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           width={chartSize.width}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
-          onClickColumn={onClickColumn}
+          onClickColumn={onClickCol}
           hideHeadingColumn={hideTableHeading}
         />
       </div>

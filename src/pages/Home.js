@@ -48,7 +48,10 @@ const DAILY_SITUATION_OPTIONS = [
 
 // UI
 
-function DailyPeriodForm({ onSubmit }) {
+function DailyPeriodForm({
+  onSubmit,
+  defaultData: { Situation: defSituation, Date: defDate, Temperature: defTemp },
+}) {
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
@@ -62,7 +65,11 @@ function DailyPeriodForm({ onSubmit }) {
     <Form method="post" onSubmit={handleSubmit}>
       <Form.Group className="mb-3" controlId="formDate">
         <Form.Label>Date</Form.Label>
-        <Form.Control name="Date" type="date" defaultValue={getCurrentDate()} />
+        <Form.Control
+          name="Date"
+          type="date"
+          defaultValue={defDate || getCurrentDate()}
+        />
       </Form.Group>
       <Form.Group className="mb-3" controlId="formTemp">
         <Form.Label>Basal Temperature</Form.Label>
@@ -72,6 +79,7 @@ function DailyPeriodForm({ onSubmit }) {
               name="Temperature"
               type="float"
               placeholder="Temp in °C"
+              defaultValue={defTemp || null}
             />
           </Col>
           <Col>
@@ -89,7 +97,7 @@ function DailyPeriodForm({ onSubmit }) {
         <ToggleButtonGroup
           name="Situation"
           type="radio"
-          defaultValue="Dry"
+          defaultValue={defSituation || "Dry"}
           className="mb-2"
         >
           {DAILY_SITUATION_OPTIONS.map((option, idx) => {
@@ -111,6 +119,7 @@ function DailyPeriodForm({ onSubmit }) {
 function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [selectedColumn, setSelectedColumn] = useState(-1);
   const [entries, setEntries] = useState(getStoredEntries());
 
   const refreshData = () => {
@@ -125,7 +134,10 @@ function HomePage() {
       />
       <PeriodChart
         entries={entries}
-        onClickColumn={() => setShowEntryModal(true)}
+        onClickColumn={(colIdx) => {
+          setSelectedColumn(colIdx);
+          setShowEntryModal(true);
+        }}
         hideTableHeading={true}
       />
       <SimpleModal
@@ -138,6 +150,11 @@ function HomePage() {
             refreshData();
             setShowEntryModal(false);
           }}
+          defaultData={
+            selectedColumn > -1 && entries.length > 0
+              ? entries[selectedColumn]
+              : {}
+          }
         />
       </SimpleModal>
       <SimpleModal
