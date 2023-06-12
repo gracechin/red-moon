@@ -24,7 +24,7 @@
     "eject": "react-scripts eject",
     "webpack-dev-server": "webpack serve",
     "dev": "webpack serve --config webpack.config.js --mode=development",
-    "prod": "webpack --mode=production"
+    "prod": "webpack serve --config webpack.config.js --mode=production"
   },
   "eslintConfig": {
     "extends": [
