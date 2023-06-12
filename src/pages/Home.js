@@ -16,7 +16,7 @@ import {
   clearStoredEntries,
   getStoredEntries,
 } from "../utils/dataStorage";
-import { getCurrentDate, getCurrentTime } from "../utils/dateTime";
+import { getCurrentDateStr, getCurrentTimeStr } from "../utils/dateTime";
 import { SimpleModal } from "../components/Modal.js";
 import { PeriodChart } from "../components/Chart";
 import NavBar from "../components/NavBar";
@@ -53,25 +53,15 @@ const PERIOD_ENTRY_MODE = {
   NEW: "New",
 };
 
-function PeriodEntryModal({
-  show,
-  onHide,
-  onSubmit,
-  defaultData: {
-    Situation: defSituation,
-    Date: defDate,
-    Time: defTime,
-    Temperature: defTemp,
-  },
-  mode,
-}) {
+function PeriodEntryModal({ show, onHide, onSubmit, defaultData, mode }) {
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
+  const defDate = defaultData.Date;
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    storeEntry(formJson);
+    storeEntry({ ...defaultData, ...formJson });
     onSubmit && onSubmit();
   }
 
@@ -88,7 +78,7 @@ function PeriodEntryModal({
             <Form.Control
               name="Date"
               type="date"
-              defaultValue={(!isAddNewMode && defDate) || getCurrentDate()}
+              defaultValue={(!isAddNewMode && defDate) || getCurrentDateStr()}
             />
           </Form.Group>
         )}
@@ -100,14 +90,18 @@ function PeriodEntryModal({
                 name="Temperature"
                 type="float"
                 placeholder="Temp in °C"
-                defaultValue={(!isAddNewMode && defTemp) || null}
+                defaultValue={
+                  (!isAddNewMode && defaultData.Temperature) || null
+                }
               />
             </Col>
             <Col>
               <Form.Control
                 name="Time"
                 type="time"
-                defaultValue={(!isAddNewMode && defTime) || getCurrentTime()}
+                defaultValue={
+                  (!isAddNewMode && defaultData.Time) || getCurrentTimeStr()
+                }
               />
             </Col>
           </Row>
@@ -118,7 +112,7 @@ function PeriodEntryModal({
           <ToggleButtonGroup
             name="Situation"
             type="radio"
-            defaultValue={(!isAddNewMode && defSituation) || "Dry"}
+            defaultValue={(!isAddNewMode && defaultData.Situation) || "Dry"}
             className="mb-2"
           >
             {DAILY_SITUATION_OPTIONS.map((option, idx) => {
