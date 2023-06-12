@@ -223,7 +223,7 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
     table1: [
       { name: "Day", value: `Day ${idx + 1}` },
       { name: "Date", value: formatDateLabel(Date) },
-      { name: "Time", value: `🕔 ${Time}` },
+      { name: "Time", value: Time ? `🕔 ${Time}` : "-" },
     ],
     graph: {
       x: idx,
