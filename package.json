@@ -19,11 +19,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack --config webpack.config.js --mode=production",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "webpack-dev-server": "webpack serve",
-    "dev": "webpack serve --mode=development",
+    "dev": "webpack serve --config webpack.config.js --mode=development",
     "prod": "webpack --mode=production"
   },
   "eslintConfig": {
