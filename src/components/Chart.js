@@ -2,6 +2,28 @@ import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 
+const splitDataByMissingData = (data) => {
+  const output = [];
+  const pushIntoOutput = (item) => {
+    if (item.length > 0) output.push(item);
+  };
+  const backtrack = (dataStreak, n) => {
+    if (n == data.length) {
+      pushIntoOutput(dataStreak);
+      return;
+    }
+    if (data[n].missingData) {
+      pushIntoOutput(dataStreak);
+      backtrack([], n + 1);
+    } else {
+      dataStreak.push(data[n]);
+      backtrack(dataStreak, n + 1);
+    }
+  };
+  backtrack([], 0);
+  return output;
+};
+
 function SynchronisedGraph({
   width,
   height,
@@ -64,7 +86,11 @@ function SynchronisedGraph({
       .line()
       .x((d) => scaleX(d.x))
       .y((d) => scaleY(d.y));
-    svg.append("path").datum(data).attr("d", line).attr("class", "graph-line");
+
+    const splittedData = splitDataByMissingData(data);
+    splittedData.forEach((d) =>
+      svg.append("path").datum(d).attr("d", line).attr("class", "graph-line")
+    );
   };
 
   return (
@@ -199,9 +225,13 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
       { name: "Date", value: formatDateLabel(Date) },
       { name: "Time", value: `🕔 ${Time}` },
     ],
-    graph: { x: idx, y: parseFloat(Temperature) * 10 },
+    graph: {
+      x: idx,
+      y: Temperature ? parseFloat(Temperature) * 10 : 0,
+      missingData: !Temperature,
+    },
     table2: [
-      { name: "Temp", value: `${Temperature}°C` },
+      { name: "Temp", value: Temperature ? `${Temperature}°C` : "-" },
       { name: "Situation", value: Situation },
     ],
   };
@@ -276,7 +306,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           <SynchronisedGraph
             width={chartSize.width}
             height={chartSize.height}
-            data={visibleData.map((d) => d.graph)}
+            data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             yDomain={yDomain}
           />
           <ChartOverlay
@@ -284,7 +314,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
             startIndex={startIndex}
             width={chartSize.width}
             height={chartSize.height}
-            data={visibleData.map((d) => d.graph)}
+            data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             activeColumn={activeColumn}
             onChangeColumn={onChangeColumn}
             onClickColumn={onClickColumn}
