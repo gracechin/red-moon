@@ -24,3 +24,14 @@ export const DAILY_SITUATION_OPTIONS = {
     icon: "🩸🩸",
   },
 };
+
+export const CHART_VIEW_KEY = "Chart view";
+
+export const CHART_VIEW_OPTIONS = {
+  NORMAL: { name: "Normal" },
+  COMPRESSED: { name: "Compressed" },
+};
+
+export const DEFAULT_SETTINGS = {
+  CHART_VIEW_KEY: CHART_VIEW_OPTIONS.NORMAL.name,
+};

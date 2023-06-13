@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout.js";
 import Home from "./pages/Home.js";
+import Settings from "./pages/Settings.js";
 
 // Bootstrap CSS & Bundle JS
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>

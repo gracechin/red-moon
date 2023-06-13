@@ -35,10 +35,9 @@ function SynchronisedGraph({
   showYGridlines,
 }) {
   const svgRef = useRef();
-
   useEffect(() => {
     d3.selectAll("svg > *").remove();
-    if (width) {
+    if (width && height && data && data.length > 0) {
       drawGraph();
     }
   }, [width, height, data]);
@@ -106,8 +105,9 @@ function TableColumn({
   onChangeColumn,
   onClick,
   columnIndex,
-  values,
+  fontSize,
   isActive,
+  data,
 }) {
   const columnStyle = { flex: `0 1 ${width}px` };
   return (
@@ -119,9 +119,13 @@ function TableColumn({
       onClick={onClick}
       key={`table-col-${columnIndex}`}
     >
-      {values.map((val, idx) => (
-        <div className="table-block" key={`table-block-${columnIndex}-${idx}`}>
-          <span>{val}</span>
+      {data.map((d, idx) => (
+        <div
+          className="table-block"
+          key={`table-block-${columnIndex}-${idx}`}
+          style={fontSize ? { fontSize } : {}}
+        >
+          <span>{d.value}</span>
         </div>
       ))}
     </div>
@@ -134,8 +138,10 @@ function SynchronisedTable({
   activeColumn,
   onChangeColumn,
   onClickColumn,
+  headingColumnKey,
   hideHeadingColumn,
   rowHeadingWidth,
+  fontSize,
 }) {
   return (
     !!data &&
@@ -148,20 +154,26 @@ function SynchronisedTable({
           >
             <div className="table-block table-block-head"></div>
             {data[0].map((d, idx) => (
-              <div className="table-block" key={`table-block-heading-${idx}`}>
-                <span>{d.name}</span>
+              <div
+                className="table-block"
+                key={`table-block-heading-${idx}`}
+                style={fontSize ? { fontSize } : {}}
+              >
+                <span>{d[headingColumnKey]}</span>
               </div>
             ))}
           </div>
         )}
         {data.map((d, i) => (
           <TableColumn
+            key={i}
             columnIndex={i}
             isActive={activeColumn == i}
             onChangeColumn={onChangeColumn}
             onClick={onClickColumn}
             columnWidth={width / data.length}
-            values={d.map((x) => x.value)}
+            data={d}
+            fontSize={fontSize}
           />
         ))}
       </div>
@@ -189,6 +201,7 @@ const ChartOverlay = ({
         {data.map(({ x, y }, i) => {
           return (
             <span
+              key={i}
               className={`dot ${activeColumn == i ? "active" : ""}`}
               style={{
                 left: `${i * colWidth + colWidth * 0.5}px`,
@@ -201,6 +214,7 @@ const ChartOverlay = ({
       <div className="column-container">
         {data.map((_d, i) => (
           <div
+            key={i}
             className={`column ${activeColumn == i ? "active" : ""}`}
             onMouseEnter={() => onChangeColumn({ activeColumn: i })}
             onMouseLeave={() => onChangeColumn({ activeColumn: -1 })}
@@ -214,25 +228,33 @@ const ChartOverlay = ({
 
 const DAYS_OF_WEEK = ["🌞", "M", "T", "W", "R", "F", "S"];
 
-const formatDateLabel = (dateStr) => {
-  const [_yyyy, _mm, dd] = dateStr.split("-");
-  return dd;
-};
-
 const formatDayOfWeek = (dateStr) => {
   const dayIdx = new Date(dateStr).getDay();
   return DAYS_OF_WEEK[dayIdx];
 };
 
-const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
+const transformEntryToData = (
+  { Temperature, Date, Time, Situation },
+  idx,
+  compressed
+) => {
   const formatSituationElse = (situationOption, elseValue = "-") =>
     Situation == situationOption.name ? situationOption.icon : elseValue;
+  const [_yyyy, _mm, dd] = Date.split("-");
   return {
     table1: [
-      { name: "Cycle  Day", value: `${idx + 1}` },
-      { name: "Date 📅", value: formatDateLabel(Date) },
-      { name: "Days of Week", value: formatDayOfWeek(Date) },
-      { name: "Temp Taken 🕔  ", value: Time ? `${Time}` : "-" },
+      { name: "Cycle  Day", compressedName: "Day", value: `${idx + 1}` },
+      { name: "Date 📅", compressedName: "📅", value: dd },
+      {
+        name: "Days of Week",
+        compressedName: "DoW",
+        value: formatDayOfWeek(Date),
+      },
+      {
+        name: "Temp Taken 🕔",
+        compressedName: "🕔",
+        value: Time ? `${Time}` : "-",
+      },
     ],
     graph: {
       x: idx,
@@ -240,17 +262,20 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
       missingData: !Temperature,
     },
     table2: [
-      { name: "Temp °C 🌡️", value: Temperature || "-" },
+      { name: "Temp °C 🌡️", compressedName: "🌡️", value: Temperature || "-" },
       {
-        name: "Egg white",
+        name: DAILY_SITUATION_OPTIONS.EGG_WHITE.name,
+        compressedName: DAILY_SITUATION_OPTIONS.EGG_WHITE.icon,
         value: formatSituationElse(DAILY_SITUATION_OPTIONS.EGG_WHITE),
       },
       {
-        name: "Creamy",
+        name: DAILY_SITUATION_OPTIONS.CREAMY.name,
+        compressedName: DAILY_SITUATION_OPTIONS.CREAMY.icon,
         value: formatSituationElse(DAILY_SITUATION_OPTIONS.CREAMY),
       },
       {
         name: "🩸, Dry, or Sticky",
+        compressedName: "🩸",
         value: formatSituationElse(
           DAILY_SITUATION_OPTIONS.PERIOD,
           formatSituationElse(
@@ -266,9 +291,15 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
   };
 };
 
-export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
-  const MIN_COL_WIDTH = 35;
-  const TABLE_HEADING_WIDTH = MIN_COL_WIDTH * 3;
+export function PeriodChart({
+  entries,
+  onClickColumn,
+  hideTableHeading,
+  compressed,
+}) {
+  const MIN_COL_WIDTH = compressed ? 25 : 35;
+  const fontSize = compressed ? "9px" : "small";
+  const TABLE_HEADING_WIDTH = compressed ? MIN_COL_WIDTH : MIN_COL_WIDTH * 3;
   const chartWrapperRef = useRef();
   const yDomain = [350, 380];
   const [startIndex, setStartIndex] = useState(0);
@@ -332,8 +363,10 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
+          headingColumnKey={compressed ? "compressedName" : "name"}
           hideHeadingColumn={hideTableHeading}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
+          fontSize={fontSize}
         />
         <div className="chart-container" ref={chartWrapperRef}>
           <SynchronisedGraph
@@ -360,8 +393,10 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
+          headingColumnKey={compressed ? "compressedName" : "name"}
           hideHeadingColumn={hideTableHeading}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
+          fontSize={fontSize}
         />
       </div>
     )

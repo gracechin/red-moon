@@ -39,7 +39,9 @@ html, body, #app {
   padding: 50px 15%;
   width: 100%;
 }
-
+.wrapper {
+  margin: 0 10px
+}
 .Graph {
   display: flex;
   width: 100%;
@@ -111,13 +113,13 @@ html, body, #app {
       left: 0;
 
       .dot {
-        .circleMixin(6px, 4px solid @graphLineColor);
+        .circleMixin(4px, 1px solid @graphLineColor);
         position: absolute;
         transition: opacity 0.3s ease-out;
         background: @graphLineColor;
         
         &.active {
-          .circleMixin(6px, 4px solid @dotOutlineColor);
+          .circleMixin(4px, 1px solid @dotOutlineColor);
           background: @dotColor;
         }
       }
@@ -155,7 +157,7 @@ html, body, #app {
       text-align: right;
       padding-right: @spacingUnit * 0.5;
       font-size: small;
-      
+
       .table-block {
         border: solid 0.5px transparent;
       }    
@@ -184,12 +186,12 @@ html, body, #app {
   }
 }
 
-.modal-content {
-  background-color: @backgroundColor;
+  .modal-content {
+    background-color: @backgroundColor;    
 
-  .btn {
-    background-color: @backgroundColor;
-    border: 1px solid white;
+    .btn {
+      background-color: @backgroundColor;
+      border: 1px solid white;
   }
 }
 

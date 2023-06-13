@@ -5,7 +5,10 @@ import {
   newDateByDiff,
 } from "../utils/dateTime";
 import { range } from "../utils/utils";
+import { DEFAULT_SETTINGS } from "../utils/constants";
+
 const DATA_ENTRIES_KEY = "Entries";
+const SETTINGS_KEY = "Settings";
 
 export const getStored = (key) => JSON.parse(localStorage.getItem(key));
 
@@ -37,6 +40,14 @@ export const storeEntries = (entries) => {
     dateComparison(e1.Date, e2.Date)
   );
   localStorage.setItem(DATA_ENTRIES_KEY, JSON.stringify(sortedEntries));
+};
+
+export const getSettings = () => getStored(SETTINGS_KEY) || DEFAULT_SETTINGS;
+export const saveSettings = (settings) => {
+  localStorage.setItem(
+    SETTINGS_KEY,
+    JSON.stringify({ ...getSettings(), ...settings })
+  );
 };
 
 export const storeEntry = (entry) => {

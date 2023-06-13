@@ -37,15 +37,13 @@ export function PeriodEntryModal({
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
   const defDate = defaultData.Date;
   const defSituation = (!isAddNewMode && defaultData.Situation) || "Dry";
-  console.log(defSituation, defaultData);
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
-    // storeEntry({ ...defaultData, ...formJson });
-    // onSubmit && onSubmit();
+    storeEntry({ ...defaultData, ...formJson });
+    onSubmit && onSubmit();
   }
 
   return (

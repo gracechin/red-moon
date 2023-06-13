@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Container, Button } from "react-bootstrap";
-import { clearStoredEntries, getStoredEntries } from "../utils/dataStorage";
+import { Button } from "react-bootstrap";
+import {
+  clearStoredEntries,
+  getStoredEntries,
+  getSettings,
+} from "../utils/dataStorage";
 import {
   PERIOD_ENTRY_MODE,
   PeriodEntryModal,
@@ -8,19 +12,21 @@ import {
 } from "../components/Modal.js";
 import { PeriodChart } from "../components/Chart";
 import NavBar from "../components/NavBar";
+import { CHART_VIEW_OPTIONS, CHART_VIEW_KEY } from "../utils/constants";
 
 function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState(-1);
   const [entries, setEntries] = useState(getStoredEntries());
+  const settings = getSettings();
 
   const refreshData = () => {
     setEntries(getStoredEntries());
   };
 
   return (
-    <Container>
+    <div className="wrapper">
       <NavBar
         onReset={() => setShowDeleteConfirmModal(true)}
         onAdd={() => {
@@ -34,6 +40,9 @@ function HomePage() {
           setSelectedColumn(colIdx);
           setShowEntryModal(true);
         }}
+        compressed={
+          settings[CHART_VIEW_KEY] == CHART_VIEW_OPTIONS.COMPRESSED.name
+        }
       />
       <PeriodEntryModal
         show={showEntryModal}
@@ -66,7 +75,7 @@ function HomePage() {
           Delete
         </Button>
       </SimpleModal>
-    </Container>
+    </div>
   );
 }
 
