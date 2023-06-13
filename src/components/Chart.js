@@ -251,25 +251,22 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
     window.addEventListener("resize", () => onResize());
   }, [entries]);
 
-  const onChangeColumn = ({ activeColumn }) => {
-    setActiveColumn(activeColumn);
-  };
+  useEffect(() => {
+    const maxNumCols = Math.floor(chartSize.width / MIN_COL_WIDTH);
+    const data = entries.map(transformEntryToData);
+    const numColsVisible = Math.min(maxNumCols, data.length);
+    setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
+  }, [chartSize, startIndex]);
 
+  const onChangeColumn = ({ activeColumn }) => setActiveColumn(activeColumn);
   const onClickCol = () => onClickColumn(activeColumn);
+  const onNavigate = (direction) => setStartIndex(startIndex + direction);
 
   const onResize = () => {
     if (!!chartWrapperRef.current) {
       const { width, height } = chartWrapperRef.current.getBoundingClientRect();
       setChartSize({ width, height });
-      const maxNumCols = Math.floor(width / MIN_COL_WIDTH);
-      const data = entries.map(transformEntryToData);
-      const numColsVisible = Math.min(maxNumCols, data.length);
-      setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
     }
-  };
-
-  const onNavigate = (direction) => {
-    setStartIndex(startIndex + direction);
   };
 
   return (
