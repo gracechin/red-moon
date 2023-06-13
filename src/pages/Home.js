@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 import { Container, Button } from "react-bootstrap";
-import { Chart as ChartJS, registerables } from "chart.js";
-ChartJS.register(...registerables);
-import { Chart, getElementAtEvent } from "react-chartjs-2";
 import { clearStoredEntries, getStoredEntries } from "../utils/dataStorage";
 import {
   PERIOD_ENTRY_MODE,
