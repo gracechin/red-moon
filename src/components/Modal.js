@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Col,
-  Row,
-  Button,
-  Form,
-  ToggleButton,
-  ToggleButtonGroup,
-  Modal,
-} from "react-bootstrap";
+import { Col, Row, Button, Form, Modal } from "react-bootstrap";
 import { storeEntry } from "../utils/dataStorage";
 import { getCurrentDateStr, getCurrentTimeStr } from "../utils/dateTime";
 import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
@@ -44,13 +36,16 @@ export function PeriodEntryModal({
 }) {
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
   const defDate = defaultData.Date;
+  const defSituation = (!isAddNewMode && defaultData.Situation) || "Dry";
+  console.log(defSituation, defaultData);
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    storeEntry({ ...defaultData, ...formJson });
-    onSubmit && onSubmit();
+    console.log(formJson);
+    // storeEntry({ ...defaultData, ...formJson });
+    // onSubmit && onSubmit();
   }
 
   return (
@@ -97,20 +92,19 @@ export function PeriodEntryModal({
         <Form.Group className="mb-3" controlId="formSituation">
           <Form.Label>Daily Situation</Form.Label>
           <br />
-          <ToggleButtonGroup
-            name="Situation"
-            type="radio"
-            defaultValue={(!isAddNewMode && defaultData.Situation) || "Dry"}
-            className="mb-2"
-          >
-            {Object.values(DAILY_SITUATION_OPTIONS).map((option, idx) => {
-              return (
-                <ToggleButton id={option.name} value={option.name} key={idx}>
-                  {[option.icon, option.name].join(" ")}
-                </ToggleButton>
-              );
-            })}
-          </ToggleButtonGroup>
+          {Object.values(DAILY_SITUATION_OPTIONS).map((option, idx) => {
+            return (
+              <Form.Check
+                key={idx}
+                type="radio"
+                name="Situation"
+                id={option.name}
+                value={option.name}
+                label={`${option.icon} ${option.name}`}
+                defaultChecked={defSituation === option.name}
+              />
+            );
+          })}
         </Form.Group>
         <Button variant="primary" type="submit">
           Submit
