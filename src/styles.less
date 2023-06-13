@@ -42,6 +42,12 @@ html, body, #app {
 .wrapper {
   margin: 0 10px
 }
+.nav-link {
+  a {
+    color: @textButtonColor;
+    text-decoration: none;  
+  }
+}
 .Graph {
   display: flex;
   width: 100%;
@@ -191,7 +197,7 @@ html, body, #app {
 
     .btn {
       background-color: @backgroundColor;
-      border: 1px solid white;
+      border: 1px solid @textButtonColor;
   }
 }
 
