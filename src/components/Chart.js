@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
+import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
 
 const splitDataByMissingData = (data) => {
   const output = [];
@@ -134,6 +135,7 @@ function SynchronisedTable({
   onChangeColumn,
   onClickColumn,
   hideHeadingColumn,
+  rowHeadingWidth,
 }) {
   return (
     !!data &&
@@ -142,7 +144,7 @@ function SynchronisedTable({
         {!hideHeadingColumn && (
           <div
             className="table-row-heading"
-            style={{ width: `${width / data.length}px` }}
+            style={{ width: `${rowHeadingWidth}px` }}
           >
             <div className="table-block table-block-head"></div>
             {data[0].map((d, idx) => (
@@ -210,20 +212,27 @@ const ChartOverlay = ({
   );
 };
 
-const DAYS_OF_WEEK = ["🌞", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAYS_OF_WEEK = ["🌞", "M", "T", "W", "R", "F", "S"];
 
 const formatDateLabel = (dateStr) => {
+  const [_yyyy, _mm, dd] = dateStr.split("-");
+  return dd;
+};
+
+const formatDayOfWeek = (dateStr) => {
   const dayIdx = new Date(dateStr).getDay();
-  const [_yyyy, mm, dd] = dateStr.split("-");
-  return `${[dd, mm].join("/")} ${DAYS_OF_WEEK[dayIdx]}`;
+  return DAYS_OF_WEEK[dayIdx];
 };
 
 const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
+  const formatSituationElse = (situationOption, elseValue = "-") =>
+    Situation == situationOption.name ? situationOption.icon : elseValue;
   return {
     table1: [
-      { name: "Day", value: `Day ${idx + 1}` },
-      { name: "Date", value: formatDateLabel(Date) },
-      { name: "Time", value: Time ? `🕔 ${Time}` : "-" },
+      { name: "Cycle  Day", value: `${idx + 1}` },
+      { name: "Date 📅", value: formatDateLabel(Date) },
+      { name: "Days of Week", value: formatDayOfWeek(Date) },
+      { name: "Temp Taken 🕔  ", value: Time ? `${Time}` : "-" },
     ],
     graph: {
       x: idx,
@@ -231,14 +240,35 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
       missingData: !Temperature,
     },
     table2: [
-      { name: "Temp", value: Temperature ? `${Temperature}°C` : "-" },
-      { name: "Situation", value: Situation },
+      { name: "Temp °C 🌡️", value: Temperature || "-" },
+      {
+        name: "Egg white",
+        value: formatSituationElse(DAILY_SITUATION_OPTIONS.EGG_WHITE),
+      },
+      {
+        name: "Creamy",
+        value: formatSituationElse(DAILY_SITUATION_OPTIONS.CREAMY),
+      },
+      {
+        name: "🩸, Dry, or Sticky",
+        value: formatSituationElse(
+          DAILY_SITUATION_OPTIONS.PERIOD,
+          formatSituationElse(
+            DAILY_SITUATION_OPTIONS.SPOTTING,
+            formatSituationElse(
+              DAILY_SITUATION_OPTIONS.DRY,
+              formatSituationElse(DAILY_SITUATION_OPTIONS.STICKY)
+            )
+          )
+        ),
+      },
     ],
   };
 };
 
 export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
-  const MIN_COL_WIDTH = 50;
+  const MIN_COL_WIDTH = 35;
+  const TABLE_HEADING_WIDTH = MIN_COL_WIDTH * 3;
   const chartWrapperRef = useRef();
   const yDomain = [350, 380];
   const [startIndex, setStartIndex] = useState(0);
@@ -272,7 +302,10 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
   return (
     !!entries &&
     entries.length > 0 && (
-      <div className="synchronised-graph-table">
+      <div
+        style={{ paddingLeft: `${TABLE_HEADING_WIDTH}px` }}
+        className="synchronised-graph-table"
+      >
         <div className="navigation-container">
           <Button
             variant="primary"
@@ -286,7 +319,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
             onClick={() => onNavigate(1)}
             disabled={
               visibleData.length == entries.length ||
-              startIndex == entries.length - startIndex
+              startIndex + visibleData.length == entries.length
             }
           >
             ⇒
@@ -300,6 +333,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
           hideHeadingColumn={hideTableHeading}
+          rowHeadingWidth={TABLE_HEADING_WIDTH}
         />
         <div className="chart-container" ref={chartWrapperRef}>
           <SynchronisedGraph
@@ -327,6 +361,7 @@ export function PeriodChart({ entries, onClickColumn, hideTableHeading }) {
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
           hideHeadingColumn={hideTableHeading}
+          rowHeadingWidth={TABLE_HEADING_WIDTH}
         />
       </div>
     )
