@@ -1,7 +1,11 @@
 import React from "react";
 import { Col, Row, Button, Form, Modal } from "react-bootstrap";
 import { storeEntry } from "../utils/dataStorage";
-import { getCurrentDateStr, getCurrentTimeStr } from "../utils/dateTime";
+import {
+  getCurrentDateStr,
+  getCurrentTimeStr,
+  transformDateStrToDateLabel,
+} from "../utils/dateTime";
 import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
@@ -78,7 +82,11 @@ export function PeriodEntryModal({
   return (
     <SimpleModal
       show={show}
-      heading={!isAddNewMode && defDate ? `${defDate} Entry` : "Period entry"}
+      heading={
+        !isAddNewMode && defDate
+          ? `${transformDateStrToDateLabel(defDate)}`
+          : "Period entry"
+      }
       onHide={onHide}
       size="md"
     >

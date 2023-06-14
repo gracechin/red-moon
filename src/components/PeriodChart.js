@@ -78,7 +78,8 @@ function SynchronisedGraph({
       const yAxisGrid = d3
         .axisLeft(scaleY)
         .tickSize(-chartWidth)
-        .tickFormat("");
+        .tickFormat("")
+        .ticks(yDomain[1] - yDomain[0]);
       svg.append("g").attr("class", "y axis-grid").call(yAxisGrid);
     }
 
@@ -126,7 +127,9 @@ function TableColumn({
           key={`table-block-${columnIndex}-${idx}`}
           style={fontSize ? { fontSize } : {}}
         >
-          <span>{d.value}</span>
+          <div className={d.iconClassname}>
+            <span>{d.value}</span>
+          </div>
         </div>
       ))}
     </div>
@@ -244,22 +247,64 @@ const formatDayOfWeek = (dateStr) => {
   return DAYS_OF_WEEK[dayIdx];
 };
 
+const EGG_WHITE_DATA = {
+  EMPTY: { ...DAILY_SITUATION_OPTIONS.EGG_WHITE, value: "-" },
+  FILLED: {
+    ...DAILY_SITUATION_OPTIONS.EGG_WHITE,
+    iconClassname: "icon-filled",
+    value: "-",
+  },
+};
+
+const CREAMY_DATA = {
+  EMPTY: { ...DAILY_SITUATION_OPTIONS.CREAMY, value: "-" },
+  FILLED: {
+    ...DAILY_SITUATION_OPTIONS.CREAMY,
+    iconClassname: "icon-filled",
+    value: "-",
+  },
+};
+
+const DRY_DATA_BASE = { name: "🩸, Dry, or Sticky", icon: "🩸" };
+const DRY_DATA = {
+  EMPTY: { ...DRY_DATA_BASE, value: "-" },
+  FILLED: {
+    ...DRY_DATA_BASE,
+    iconClassname: "icon-filled",
+    value: "-",
+  },
+  PERIOD: { ...DRY_DATA_BASE, iconClassname: "icon-period", value: "-" },
+  SPOTTING: { ...DRY_DATA_BASE, iconClassname: "icon-spotting", value: "-" },
+};
+
+const getFluidData = (situation) => {
+  if (situation === DAILY_SITUATION_OPTIONS.EGG_WHITE.name)
+    return [EGG_WHITE_DATA.FILLED, CREAMY_DATA.FILLED, DRY_DATA.FILLED];
+  if (situation === DAILY_SITUATION_OPTIONS.CREAMY.name)
+    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.FILLED, DRY_DATA.FILLED];
+  if (situation === DAILY_SITUATION_OPTIONS.STICKY.name)
+    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.FILLED];
+  if (situation === DAILY_SITUATION_OPTIONS.PERIOD.name)
+    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.PERIOD];
+  if (situation === DAILY_SITUATION_OPTIONS.SPOTTING.name)
+    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.SPOTTING];
+  return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY];
+};
+
 const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
-  const formatSituationElse = (situationOption, elseValue = "-") =>
-    Situation == situationOption.name ? situationOption.icon : elseValue;
   const [_yyyy, _mm, dd] = Date.split("-");
   return {
     table1: [
-      { name: "Cycle  Day", compressedName: "Day", value: `${idx + 1}` },
-      { name: "Date 📅", compressedName: "📅", value: dd },
+      { name: "Cycle  Day", icon: "Day", value: `${idx + 1}` },
+      { name: "Date 📅", icon: "📅", value: dd },
       {
-        name: "Week Day 📅",
-        compressedName: "DoW",
+        name: "Week Day 🗓️",
+        icon: "🗓️",
         value: formatDayOfWeek(Date),
       },
       {
         name: "Temp Taken 🕔",
-        compressedName: "🕔",
+        icon: "🕔",
         value: Time ? `${Time}` : "-",
       },
     ],
@@ -269,33 +314,22 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
       missingData: !Temperature,
     },
     table2: [
-      { name: "Temp °C 🌡️", compressedName: "🌡️", value: Temperature || "-" },
-      {
-        name: DAILY_SITUATION_OPTIONS.EGG_WHITE.name,
-        compressedName: DAILY_SITUATION_OPTIONS.EGG_WHITE.icon,
-        value: formatSituationElse(DAILY_SITUATION_OPTIONS.EGG_WHITE),
-      },
-      {
-        name: DAILY_SITUATION_OPTIONS.CREAMY.name,
-        compressedName: DAILY_SITUATION_OPTIONS.CREAMY.icon,
-        value: formatSituationElse(DAILY_SITUATION_OPTIONS.CREAMY),
-      },
-      {
-        name: "🩸, Dry, or Sticky",
-        compressedName: "🩸",
-        value: formatSituationElse(
-          DAILY_SITUATION_OPTIONS.PERIOD,
-          formatSituationElse(
-            DAILY_SITUATION_OPTIONS.SPOTTING,
-            formatSituationElse(
-              DAILY_SITUATION_OPTIONS.DRY,
-              formatSituationElse(DAILY_SITUATION_OPTIONS.STICKY)
-            )
-          )
-        ),
-      },
+      { name: "Temp °C 🌡️", icon: "🌡️", value: Temperature || "-" },
+      ...getFluidData(Situation),
     ],
   };
+};
+
+const calcYDomain = (entries) => {
+  if (entries.length === 0) return [360, 380];
+  const yValues = entries
+    .filter((e) => !!e.Temperature)
+    .map((e) => parseInt(e.Temperature) * 10);
+  const max = Math.max.apply(null, yValues);
+  const min = Math.min.apply(null, yValues);
+  const calcMin = min - 2;
+  const calcMax = calcMin + 15;
+  return [calcMin, calcMax < max ? max + 2 : calcMax];
 };
 
 export function PeriodChart({
@@ -308,7 +342,7 @@ export function PeriodChart({
   const fontSize = compressed ? "9px" : "small";
   const TABLE_HEADING_WIDTH = compressed ? MIN_COL_WIDTH : MIN_COL_WIDTH * 3;
   const chartWrapperRef = useRef();
-  const yDomain = [350, 380];
+  const yDomain = calcYDomain(entries);
   const [startIndex, setStartIndex] = useState(0);
   const [visibleData, setVisibleData] = useState([]);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
@@ -379,7 +413,7 @@ export function PeriodChart({
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
-          headingColumnKey={compressed ? "compressedName" : "name"}
+          headingColumnKey={compressed ? "icon" : "name"}
           hideHeadingColumn={hideTableHeading}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
           fontSize={fontSize}
@@ -390,6 +424,7 @@ export function PeriodChart({
             height={chartSize.height}
             data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             yDomain={yDomain}
+            showYGridlines={true}
           />
           <ChartOverlay
             yDomain={yDomain}
@@ -410,7 +445,7 @@ export function PeriodChart({
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
-          headingColumnKey={compressed ? "compressedName" : "name"}
+          headingColumnKey={compressed ? "icon" : "name"}
           hideHeadingColumn={hideTableHeading}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
           fontSize={fontSize}

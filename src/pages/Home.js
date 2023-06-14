@@ -10,7 +10,7 @@ import {
   PeriodEntryModal,
   ConfirmModal,
 } from "../components/Modal.js";
-import { PeriodChart } from "../components/Chart";
+import { PeriodChart } from "../components/PeriodChart";
 import NavBar from "../components/NavBar";
 import {
   CHART_VIEW_OPTIONS,

@@ -10,6 +10,8 @@
 @columnHoverColor: #F85966;
 @dotOutlineColor:#F85966; 
 @dotColor: #F85966;
+@iconFilledColor: #C2EFB3;
+@iconPeriodColor: #F85966;
 
 @chartHeight: 50%;
 @spacingUnit: 10px;
@@ -174,6 +176,23 @@ html, body, #app {
 
     .table-block {
       border: solid 0.5px @gridLineColor;
+      .icon {
+        color: transparent;
+      }
+      .icon-filled {
+        background-color: @iconFilledColor;
+        color: transparent;
+      }
+      .icon-period {
+        background-color: @iconPeriodColor;
+        clip-path: circle(30%);
+        color: transparent;
+      }
+      .icon-spotting {
+        background-color: @iconPeriodColor;
+        clip-path: circle(15%);
+        color: transparent;
+      }
     }
 
     .table-column {
