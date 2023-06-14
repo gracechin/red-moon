@@ -219,17 +219,21 @@ const ChartOverlay = ({
   return (
     <div className="chart-overlay">
       <div className="dots-container">
-        {data.map(({ x, y }, i) => {
+        {data.map(({ _x, y, missingData }, i) => {
           return (
             <span
               key={i}
               className={`dot ${
                 activeColumn == i + startIndex ? "active" : ""
               }`}
-              style={{
-                left: `${i * colWidth + colWidth * 0.5}px`,
-                top: `${scaleY(y)}px`,
-              }}
+              style={
+                missingData
+                  ? { display: "none" }
+                  : {
+                      left: `${i * colWidth + colWidth * 0.5}px`,
+                      top: `${scaleY(y)}px`,
+                    }
+              }
             />
           );
         })}
