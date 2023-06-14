@@ -24,7 +24,7 @@ function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState(-1);
-  const [entries, setEntries] = useState(getStoredEntries());
+  const [storedEntries, setStoredEntries] = useState(getStoredEntries());
   const settings = getSettings();
   const chartStartDate = settings[CHART_START_DATE_KEY];
   const chartEndDate = newDateStrByDiff(
@@ -32,8 +32,13 @@ function HomePage() {
     settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
   );
 
+  const entries = storedEntries.filter((e) => {
+    const d = new Date(e.Date);
+    return new Date(chartEndDate) > d && new Date(chartStartDate) <= d;
+  });
+
   const refreshData = () => {
-    setEntries(getStoredEntries());
+    setStoredEntries(getStoredEntries());
   };
 
   return (
