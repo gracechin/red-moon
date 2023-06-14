@@ -4,28 +4,6 @@ import { Button } from "react-bootstrap";
 import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
 import { transformDateStrToDateLabel } from "../utils/dateTime";
 
-const splitDataByMissingData = (data) => {
-  const output = [];
-  const pushIntoOutput = (item) => {
-    if (item.length > 0) output.push(item);
-  };
-  const backtrack = (dataStreak, n) => {
-    if (n == data.length) {
-      pushIntoOutput(dataStreak);
-      return;
-    }
-    if (data[n].missingData) {
-      pushIntoOutput(dataStreak);
-      backtrack([], n + 1);
-    } else {
-      dataStreak.push(data[n]);
-      backtrack(dataStreak, n + 1);
-    }
-  };
-  backtrack([], 0);
-  return output;
-};
-
 function SynchronisedGraph({
   width,
   height,
@@ -89,10 +67,12 @@ function SynchronisedGraph({
       .x((d) => scaleX(d.x))
       .y((d) => scaleY(d.y));
 
-    const splittedData = splitDataByMissingData(data);
-    splittedData.forEach((d) =>
-      svg.append("path").datum(d).attr("d", line).attr("class", "graph-line")
-    );
+    const filteredData = data.filter((d) => !d.missingData);
+    svg
+      .append("path")
+      .datum(filteredData)
+      .attr("d", line)
+      .attr("class", "graph-line");
   };
 
   return (
