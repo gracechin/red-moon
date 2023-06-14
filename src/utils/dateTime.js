@@ -26,7 +26,7 @@ export const datesDiffInDays = (d1, d2) => {
 };
 
 export const newDateByDiff = (d, diff) => {
-  const nd = new Date();
+  const nd = new Date(d);
   nd.setDate(d.getDate() + diff);
   return nd;
 };
