@@ -27,14 +27,20 @@ const getDefaultSettings = () => {
   return defaultSettings;
 };
 
+const initialiseSettings = () => {
+  const defSettings = getDefaultSettings();
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(defSettings));
+};
+
 export const getSettings = () => {
+  if (!settings) initialiseSettings();
   const settings = getStored(SETTINGS_KEY);
-  if (!settings) return getDefaultSettings();
   settings[CHART_NUM_OF_CYCLE_DAYS_KEY] = parseInt(
     settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
   );
   return settings;
 };
+
 export const saveSettings = (settings) => {
   localStorage.setItem(
     SETTINGS_KEY,
