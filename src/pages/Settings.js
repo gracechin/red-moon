@@ -16,7 +16,22 @@ import {
   CHART_VIEW_KEY,
   CHART_START_DATE_KEY,
   CHART_NUM_OF_CYCLE_DAYS_KEY,
+  DEF_TEMP_TAKEN_TIME_KEY,
 } from "../utils/constants";
+
+const FieldRow = ({ children, name }) => {
+  return (
+    <>
+      <Row>
+        <Col>
+          <Form.Label>{name}</Form.Label>
+        </Col>
+        <Col>{children}</Col>
+      </Row>
+      <br />
+    </>
+  );
+};
 
 function SettingsPage() {
   const navigate = useNavigate();
@@ -37,58 +52,47 @@ function SettingsPage() {
       <Container className="settings">
         <h1>Settings</h1>
         <Form method="post" onSubmit={handleSubmit}>
-          <Row>
-            <Col>
-              <Form.Label>Chart view</Form.Label>
-            </Col>
-            <Col>
-              <ToggleButtonGroup
-                type="radio"
-                name={CHART_VIEW_KEY}
-                defaultValue={defSettings[CHART_VIEW_KEY]}
-              >
-                {Object.values(CHART_VIEW_OPTIONS).map((opt, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    id={`tbg-btn-${opt.name}`}
-                    value={opt.name}
-                  >
-                    {opt.name}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col>
-              <Form.Label>Chart start date</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                name={CHART_START_DATE_KEY}
-                type="date"
-                defaultValue={defSettings[CHART_START_DATE_KEY]}
-              />
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col>
-              <Form.Label>Chart # of cycle days</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                name={CHART_NUM_OF_CYCLE_DAYS_KEY}
-                type="number"
-                min={1}
-                defaultValue={defSettings[CHART_NUM_OF_CYCLE_DAYS_KEY]}
-              />
-            </Col>
-          </Row>
-          <br />
+          <FieldRow name="Chart view">
+            <ToggleButtonGroup
+              type="radio"
+              name={CHART_VIEW_KEY}
+              defaultValue={defSettings[CHART_VIEW_KEY]}
+            >
+              {Object.values(CHART_VIEW_OPTIONS).map((opt, idx) => (
+                <ToggleButton
+                  key={idx}
+                  id={`tbg-btn-${opt.name}`}
+                  value={opt.name}
+                >
+                  {opt.name}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </FieldRow>
+          <FieldRow name="Chart start date">
+            <Form.Control
+              name={CHART_START_DATE_KEY}
+              type="date"
+              defaultValue={defSettings[CHART_START_DATE_KEY]}
+            />
+          </FieldRow>
+          <FieldRow name="Chart # of cycle days">
+            <Form.Control
+              name={CHART_NUM_OF_CYCLE_DAYS_KEY}
+              type="number"
+              min={1}
+              defaultValue={defSettings[CHART_NUM_OF_CYCLE_DAYS_KEY]}
+            />
+          </FieldRow>
+          <FieldRow name="Default temp taken time">
+            <Form.Control
+              name={DEF_TEMP_TAKEN_TIME_KEY}
+              type="time"
+              defaultValue={defSettings[DEF_TEMP_TAKEN_TIME_KEY]}
+            />
+          </FieldRow>
           <Button variant="primary" type="submit">
-            Submit
+            Save
           </Button>
         </Form>
       </Container>

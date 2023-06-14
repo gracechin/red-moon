@@ -1,12 +1,15 @@
 import React from "react";
 import { Col, Row, Button, Form, Modal } from "react-bootstrap";
-import { storeEntry } from "../utils/dataStorage";
+import { storeEntry, getSettings } from "../utils/dataStorage";
 import {
   getCurrentDateStr,
   getCurrentTimeStr,
   transformDateStrToDateLabel,
 } from "../utils/dateTime";
-import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
+import {
+  DAILY_SITUATION_OPTIONS,
+  DEF_TEMP_TAKEN_TIME_KEY,
+} from "../utils/constants";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (
@@ -68,8 +71,12 @@ export function PeriodEntryModal({
   dateConfig,
 }) {
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
+  const settings = getSettings();
+  const defTime = settings[DEF_TEMP_TAKEN_TIME_KEY];
   const defDate = defaultData.Date;
-  const defSituation = (!isAddNewMode && defaultData.Situation) || "Dry";
+  const defSituation =
+    (!isAddNewMode && defaultData.Situation) ||
+    DAILY_SITUATION_OPTIONS.NONE.name;
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
@@ -120,9 +127,7 @@ export function PeriodEntryModal({
               <Form.Control
                 name="Time"
                 type="time"
-                defaultValue={
-                  (!isAddNewMode && defaultData.Time) || getCurrentTimeStr()
-                }
+                defaultValue={(!isAddNewMode && defaultData.Time) || defTime}
               />
             </Col>
           </Row>
@@ -138,7 +143,7 @@ export function PeriodEntryModal({
                 name="Situation"
                 id={option.name}
                 value={option.name}
-                label={`${option.icon} ${option.name}`}
+                label={`${option.icon ? option.icon + " " : ""}${option.name}`}
                 defaultChecked={defSituation === option.name}
               />
             );

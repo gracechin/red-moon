@@ -26,6 +26,7 @@ const CREAMY_DATA = {
 };
 const DRY_DATA = {
   EMPTY: DRY_DATA_BASE,
+  DRY: { ...DRY_DATA_BASE, iconClassname: "icon icon-dry" },
   FILLED: { ...DRY_DATA_BASE, iconClassname: "icon icon-filled" },
   PERIOD: { ...DRY_DATA_BASE, iconClassname: "icon icon-period" },
   SPOTTING: { ...DRY_DATA_BASE, iconClassname: "icon icon-spotting" },
@@ -35,7 +36,7 @@ export const DAILY_SITUATION_OPTIONS = {
   DRY: {
     name: "Dry",
     icon: "🌵",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY],
+    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.DRY],
   },
   STICKY: {
     name: "Sticky",
@@ -64,13 +65,13 @@ export const DAILY_SITUATION_OPTIONS = {
   },
   NONE: {
     name: "None",
-    icon: "-",
     fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY],
   },
 };
 
 export const CHART_VIEW_KEY = "Chart view";
 export const CHART_START_DATE_KEY = "Chart start date";
+export const DEF_TEMP_TAKEN_TIME_KEY = "Default time taken key";
 export const CHART_NUM_OF_CYCLE_DAYS_KEY = "Chart # of cycle days";
 export const DATA_ENTRIES_KEY = "Entries";
 export const SETTINGS_KEY = "Settings";
@@ -81,6 +82,7 @@ export const CHART_VIEW_OPTIONS = {
 };
 
 export const DEFAULT_SETTINGS = {
-  "Chart view": CHART_VIEW_OPTIONS.NORMAL.name,
-  "Chart # of cycle days": 40,
+  [CHART_VIEW_KEY]: CHART_VIEW_OPTIONS.NORMAL.name,
+  [CHART_NUM_OF_CYCLE_DAYS_KEY]: 40,
+  [DEF_TEMP_TAKEN_TIME_KEY]: "08:00",
 };
