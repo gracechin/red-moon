@@ -133,6 +133,7 @@ function TableColumn({
 }
 
 function SynchronisedTable({
+  startIndex,
   data,
   width,
   activeColumn,
@@ -164,24 +165,28 @@ function SynchronisedTable({
             ))}
           </div>
         )}
-        {data.map((d, i) => (
-          <TableColumn
-            key={i}
-            columnIndex={i}
-            isActive={activeColumn == i}
-            onChangeColumn={onChangeColumn}
-            onClick={onClickColumn}
-            columnWidth={width / data.length}
-            data={d}
-            fontSize={fontSize}
-          />
-        ))}
+        {data.map((d, i) => {
+          const colIdx = startIndex + i;
+          return (
+            <TableColumn
+              key={colIdx}
+              columnIndex={colIdx}
+              isActive={activeColumn == colIdx}
+              onChangeColumn={onChangeColumn}
+              onClick={onClickColumn}
+              columnWidth={width / data.length}
+              data={d}
+              fontSize={fontSize}
+            />
+          );
+        })}
       </div>
     )
   );
 }
 
 const ChartOverlay = ({
+  startIndex,
   yDomain,
   width,
   height,
@@ -202,7 +207,9 @@ const ChartOverlay = ({
           return (
             <span
               key={i}
-              className={`dot ${activeColumn == i ? "active" : ""}`}
+              className={`dot ${
+                activeColumn == i + startIndex ? "active" : ""
+              }`}
               style={{
                 left: `${i * colWidth + colWidth * 0.5}px`,
                 top: `${scaleY(y)}px`,
@@ -212,15 +219,18 @@ const ChartOverlay = ({
         })}
       </div>
       <div className="column-container">
-        {data.map((_d, i) => (
-          <div
-            key={i}
-            className={`column ${activeColumn == i ? "active" : ""}`}
-            onMouseEnter={() => onChangeColumn({ activeColumn: i })}
-            onMouseLeave={() => onChangeColumn({ activeColumn: -1 })}
-            onClick={onClickColumn}
-          />
-        ))}
+        {data.map((_d, i) => {
+          const colIdx = startIndex + i;
+          return (
+            <div
+              key={i}
+              className={`column ${activeColumn == colIdx ? "active" : ""}`}
+              onMouseEnter={() => onChangeColumn({ activeColumn: colIdx })}
+              onMouseLeave={() => onChangeColumn({ activeColumn: -1 })}
+              onClick={onClickColumn}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -357,6 +367,7 @@ export function PeriodChart({
           </Button>
         </div>
         <SynchronisedTable
+          startIndex={startIndex}
           rowLabelKey="x"
           data={visibleData.map((d) => d.table1)}
           width={chartSize.width}
@@ -387,6 +398,7 @@ export function PeriodChart({
           />
         </div>
         <SynchronisedTable
+          startIndex={startIndex}
           rowLabelKey="x"
           data={visibleData.map((d) => d.table2)}
           width={chartSize.width}
