@@ -102,6 +102,20 @@ function SynchronisedGraph({
   );
 }
 
+function TableBlock({ keySegment, idx, fontSize, iconClassname, value }) {
+  return (
+    <div
+      className="table-block"
+      key={`table-block-${keySegment}-${idx}`}
+      style={fontSize ? { fontSize } : {}}
+    >
+      <div className={iconClassname}>
+        <span>{value}</span>
+      </div>
+    </div>
+  );
+}
+
 function TableColumn({
   width,
   onChangeColumn,
@@ -122,15 +136,13 @@ function TableColumn({
       key={`table-col-${columnIndex}`}
     >
       {data.map((d, idx) => (
-        <div
-          className="table-block"
-          key={`table-block-${columnIndex}-${idx}`}
-          style={fontSize ? { fontSize } : {}}
-        >
-          <div className={d.iconClassname}>
-            <span>{d.value}</span>
-          </div>
-        </div>
+        <TableBlock
+          keySegment={columnIndex}
+          idx={idx}
+          fontSize={fontSize}
+          iconClassname={d.iconClassname}
+          value={d.value}
+        />
       ))}
     </div>
   );
@@ -159,13 +171,13 @@ function SynchronisedTable({
           >
             <div className="table-block table-block-head"></div>
             {data[0].map((d, idx) => (
-              <div
-                className="table-block"
-                key={`table-block-heading-${idx}`}
-                style={fontSize ? { fontSize } : {}}
-              >
-                <span>{d[headingColumnKey]}</span>
-              </div>
+              <TableBlock
+                keySegment="heading"
+                idx={idx}
+                fontSize={fontSize}
+                iconClassname={`${d.iconClassname} icon-heading`}
+                value={d[headingColumnKey]}
+              />
             ))}
           </div>
         )}
@@ -247,48 +259,12 @@ const formatDayOfWeek = (dateStr) => {
   return DAYS_OF_WEEK[dayIdx];
 };
 
-const EGG_WHITE_DATA = {
-  EMPTY: { ...DAILY_SITUATION_OPTIONS.EGG_WHITE, value: "-" },
-  FILLED: {
-    ...DAILY_SITUATION_OPTIONS.EGG_WHITE,
-    iconClassname: "icon-filled",
-    value: "-",
-  },
-};
-
-const CREAMY_DATA = {
-  EMPTY: { ...DAILY_SITUATION_OPTIONS.CREAMY, value: "-" },
-  FILLED: {
-    ...DAILY_SITUATION_OPTIONS.CREAMY,
-    iconClassname: "icon-filled",
-    value: "-",
-  },
-};
-
-const DRY_DATA_BASE = { name: "🩸, Dry, or Sticky", icon: "🩸" };
-const DRY_DATA = {
-  EMPTY: { ...DRY_DATA_BASE, value: "-" },
-  FILLED: {
-    ...DRY_DATA_BASE,
-    iconClassname: "icon-filled",
-    value: "-",
-  },
-  PERIOD: { ...DRY_DATA_BASE, iconClassname: "icon-period", value: "-" },
-  SPOTTING: { ...DRY_DATA_BASE, iconClassname: "icon-spotting", value: "-" },
-};
-
 const getFluidData = (situation) => {
-  if (situation === DAILY_SITUATION_OPTIONS.EGG_WHITE.name)
-    return [EGG_WHITE_DATA.FILLED, CREAMY_DATA.FILLED, DRY_DATA.FILLED];
-  if (situation === DAILY_SITUATION_OPTIONS.CREAMY.name)
-    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.FILLED, DRY_DATA.FILLED];
-  if (situation === DAILY_SITUATION_OPTIONS.STICKY.name)
-    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.FILLED];
-  if (situation === DAILY_SITUATION_OPTIONS.PERIOD.name)
-    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.PERIOD];
-  if (situation === DAILY_SITUATION_OPTIONS.SPOTTING.name)
-    return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.SPOTTING];
-  return [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY];
+  const matchedOptions = Object.values(DAILY_SITUATION_OPTIONS).filter(
+    (option) => option.name == situation
+  );
+  if (matchedOptions.length > 0) return matchedOptions[0].fluidData;
+  return DAILY_SITUATION_OPTIONS.NONE.fluidData;
 };
 
 const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {

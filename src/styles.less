@@ -178,20 +178,31 @@ html, body, #app {
       border: solid 0.5px @gridLineColor;
       .icon {
         color: transparent;
-      }
-      .icon-filled {
-        background-color: @iconFilledColor;
-        color: transparent;
-      }
-      .icon-period {
-        background-color: @iconPeriodColor;
-        clip-path: circle(30%);
-        color: transparent;
-      }
-      .icon-spotting {
-        background-color: @iconPeriodColor;
-        clip-path: circle(15%);
-        color: transparent;
+        margin: 2px;
+        border-radius: 3px;
+
+        &-filled {
+          background-color: @iconFilledColor;
+          color: transparent;
+        }
+
+        &-period {
+          background-color: @iconPeriodColor;
+          clip-path: circle(30%);
+          color: transparent;
+        }
+
+        &-spotting {
+          background-color: @iconPeriodColor;
+          clip-path: circle(15%);
+          color: transparent;
+        }
+
+        &-heading {
+          color: @textColor;
+          clip-path: none;
+          background-color: transparent;
+        }
       }
     }
 
