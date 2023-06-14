@@ -58,8 +58,15 @@ const genDefaultEntries = () => {
     Date: newDateStrByDiff(startDate, i),
   }));
 };
-export const getStoredEntries = () =>
-  getStored(DATA_ENTRIES_KEY) || genDefaultEntries();
+
+export const getStoredEntries = () => {
+  return genDefaultEntries().map((defEntry) => {
+    const entries = getStored(DATA_ENTRIES_KEY) || [];
+    const matchedEntries = entries.filter((e) => e.Date == defEntry.Date);
+    if (matchedEntries.length == 0) return defEntry;
+    return matchedEntries[0];
+  });
+};
 
 export const storeEntries = (entries) => {
   const sortedEntries = entries.sort((e1, e2) =>
