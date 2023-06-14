@@ -36,3 +36,12 @@ export const newDateStrByDiff = (dateStr, diff) => {
   const nd = newDateByDiff(d, diff);
   return transformDateToDateStr(nd);
 };
+
+export const transformDateStrToDateLabel = (dateStr) => {
+  const d = new Date(dateStr);
+  return d.toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};

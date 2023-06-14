@@ -80,6 +80,7 @@ export function PeriodEntryModal({
       show={show}
       heading={!isAddNewMode && defDate ? `${defDate} Entry` : "Period entry"}
       onHide={onHide}
+      size="md"
     >
       <Form method="post" onSubmit={handleSubmit}>
         {isAddNewMode && (

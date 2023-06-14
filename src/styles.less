@@ -138,14 +138,17 @@ html, body, #app {
       height: 100%;
 
       .column {
-        background-color: @columnHoverColor;
+        background-color: transparent;
         display: flex;
         flex: 1;
-        opacity: 0;
         transition: opacity 0.3s ease-out;
+        border: solid 0.5px @gridLineColor;
+        opacity: 1;
   
         &.active {
-          opacity: 0.2  ;
+          opacity: 0.5;
+          background-color: tint(@columnHoverColor, 50%);
+          border: solid 0.5px tint(@columnHoverColor, 50%);
         }
       }
     }

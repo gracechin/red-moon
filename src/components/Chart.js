@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
+import { transformDateStrToDateLabel } from "../utils/dateTime";
 
 const splitDataByMissingData = (data) => {
   const output = [];
@@ -243,11 +244,7 @@ const formatDayOfWeek = (dateStr) => {
   return DAYS_OF_WEEK[dayIdx];
 };
 
-const transformEntryToData = (
-  { Temperature, Date, Time, Situation },
-  idx,
-  compressed
-) => {
+const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
   const formatSituationElse = (situationOption, elseValue = "-") =>
     Situation == situationOption.name ? situationOption.icon : elseValue;
   const [_yyyy, _mm, dd] = Date.split("-");
@@ -256,7 +253,7 @@ const transformEntryToData = (
       { name: "Cycle  Day", compressedName: "Day", value: `${idx + 1}` },
       { name: "Date 📅", compressedName: "📅", value: dd },
       {
-        name: "Days of Week",
+        name: "Week Day 📅",
         compressedName: "DoW",
         value: formatDayOfWeek(Date),
       },
@@ -355,6 +352,14 @@ export function PeriodChart({
           >
             ⇐
           </Button>
+          <div>
+            {entries.length > 0 &&
+              `${transformDateStrToDateLabel(
+                entries[0].Date
+              )} - ${transformDateStrToDateLabel(
+                entries[entries.length - 1].Date
+              )}`}
+          </div>
           <Button
             variant="primary"
             onClick={() => onNavigate(1)}
