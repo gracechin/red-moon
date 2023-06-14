@@ -33,6 +33,7 @@ export function PeriodEntryModal({
   onSubmit,
   defaultData,
   mode,
+  dateConfig,
 }) {
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
   const defDate = defaultData.Date;
@@ -59,6 +60,8 @@ export function PeriodEntryModal({
             <Form.Control
               name="Date"
               type="date"
+              max={dateConfig.maxDate}
+              min={dateConfig.minDate}
               defaultValue={(!isAddNewMode && defDate) || getCurrentDateStr()}
             />
           </Form.Group>

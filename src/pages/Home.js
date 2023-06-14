@@ -12,7 +12,13 @@ import {
 } from "../components/Modal.js";
 import { PeriodChart } from "../components/Chart";
 import NavBar from "../components/NavBar";
-import { CHART_VIEW_OPTIONS, CHART_VIEW_KEY } from "../utils/constants";
+import {
+  CHART_VIEW_OPTIONS,
+  CHART_VIEW_KEY,
+  CHART_START_DATE_KEY,
+  CHART_NUM_OF_CYCLE_DAYS_KEY,
+} from "../utils/constants";
+import { newDateStrByDiff } from "../utils/dateTime";
 
 function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
@@ -20,6 +26,11 @@ function HomePage() {
   const [selectedColumn, setSelectedColumn] = useState(-1);
   const [entries, setEntries] = useState(getStoredEntries());
   const settings = getSettings();
+  const chartStartDate = settings[CHART_START_DATE_KEY];
+  const chartEndDate = newDateStrByDiff(
+    chartStartDate,
+    settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
+  );
 
   const refreshData = () => {
     setEntries(getStoredEntries());
@@ -56,6 +67,10 @@ function HomePage() {
             ? entries[selectedColumn]
             : {}
         }
+        dateConfig={{
+          minDate: chartStartDate,
+          maxDate: chartEndDate,
+        }}
         mode={
           selectedColumn > -1 ? PERIOD_ENTRY_MODE.EDIT : PERIOD_ENTRY_MODE.NEW
         }

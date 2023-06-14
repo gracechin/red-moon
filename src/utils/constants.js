@@ -26,6 +26,10 @@ export const DAILY_SITUATION_OPTIONS = {
 };
 
 export const CHART_VIEW_KEY = "Chart view";
+export const CHART_START_DATE_KEY = "Chart start date";
+export const CHART_NUM_OF_CYCLE_DAYS_KEY = "Chart # of cycle days";
+export const DATA_ENTRIES_KEY = "Entries";
+export const SETTINGS_KEY = "Settings";
 
 export const CHART_VIEW_OPTIONS = {
   NORMAL: { name: "Normal" },
@@ -33,5 +37,6 @@ export const CHART_VIEW_OPTIONS = {
 };
 
 export const DEFAULT_SETTINGS = {
-  CHART_VIEW_KEY: CHART_VIEW_OPTIONS.NORMAL.name,
+  "Chart view": CHART_VIEW_OPTIONS.NORMAL.name,
+  "Chart # of cycle days": 40,
 };

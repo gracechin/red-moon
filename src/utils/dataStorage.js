@@ -1,39 +1,59 @@
 import {
   dateComparison,
-  datesDiffInDays,
-  transformDateToDateStr,
-  newDateByDiff,
+  newDateStrByDiff,
+  getCurrentDateStr,
 } from "../utils/dateTime";
 import { range } from "../utils/utils";
-import { DEFAULT_SETTINGS } from "../utils/constants";
+import {
+  DEFAULT_SETTINGS,
+  DATA_ENTRIES_KEY,
+  SETTINGS_KEY,
+  CHART_START_DATE_KEY,
+  CHART_NUM_OF_CYCLE_DAYS_KEY,
+} from "../utils/constants";
 
-const DATA_ENTRIES_KEY = "Entries";
-const SETTINGS_KEY = "Settings";
+// Utils
 
 export const getStored = (key) => JSON.parse(localStorage.getItem(key));
 
 export const store = (key, value) =>
   localStorage.setItem(key, JSON.stringify(value));
 
-export const getStoredEntries = () => getStored(DATA_ENTRIES_KEY) || [];
+// Settings
 
-const getMissingEntries = (entries, newEntry) => {
-  if (entries.length == 0) return [];
-  const newEntryDate = new Date(newEntry.Date);
-  const dates = entries.map((e) => new Date(e.Date));
-  const maxDate = new Date(Math.max.apply(null, dates));
-  const minDate = new Date(Math.min.apply(null, dates));
-  const diffWithMaxDate = datesDiffInDays(maxDate, newEntryDate);
-  const diffWithMinDate = datesDiffInDays(minDate, newEntryDate);
-  if (diffWithMaxDate == 1 || diffWithMinDate == 1) return [];
-  const missingDates =
-    diffWithMaxDate > diffWithMinDate
-      ? range(1, diffWithMinDate).map((i) => newDateByDiff(minDate, -i))
-      : range(1, diffWithMaxDate).map((i) => newDateByDiff(maxDate, i));
-  return missingDates.map((d) => ({
-    Date: transformDateToDateStr(d),
+const getDefaultSettings = () => {
+  const defaultSettings = DEFAULT_SETTINGS;
+  defaultSettings[CHART_START_DATE_KEY] = getCurrentDateStr();
+  return defaultSettings;
+};
+
+export const getSettings = () => {
+  const settings = getStored(SETTINGS_KEY);
+  if (!settings) return getDefaultSettings();
+  settings[CHART_NUM_OF_CYCLE_DAYS_KEY] = parseInt(
+    settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
+  );
+  return settings;
+};
+export const saveSettings = (settings) => {
+  localStorage.setItem(
+    SETTINGS_KEY,
+    JSON.stringify({ ...getSettings(), ...settings })
+  );
+};
+
+// Entries
+
+const genDefaultEntries = () => {
+  const settings = getSettings();
+  const numEntries = settings[CHART_NUM_OF_CYCLE_DAYS_KEY];
+  const startDate = settings[CHART_START_DATE_KEY];
+  return range(0, numEntries).map((i) => ({
+    Date: newDateStrByDiff(startDate, i),
   }));
 };
+export const getStoredEntries = () =>
+  getStored(DATA_ENTRIES_KEY) || genDefaultEntries();
 
 export const storeEntries = (entries) => {
   const sortedEntries = entries.sort((e1, e2) =>
@@ -42,21 +62,9 @@ export const storeEntries = (entries) => {
   localStorage.setItem(DATA_ENTRIES_KEY, JSON.stringify(sortedEntries));
 };
 
-export const getSettings = () => getStored(SETTINGS_KEY) || DEFAULT_SETTINGS;
-export const saveSettings = (settings) => {
-  localStorage.setItem(
-    SETTINGS_KEY,
-    JSON.stringify({ ...getSettings(), ...settings })
-  );
-};
-
 export const storeEntry = (entry) => {
-  var entries = getStoredEntries() || [];
-  if (entries.map((e) => e.Date).includes(entry.Date)) {
-    entries = entries.filter((e) => e.Date != entry.Date);
-  } else {
-    entries = [...entries, ...getMissingEntries(entries, entry)];
-  }
+  var entries = getStoredEntries();
+  entries = entries.filter((e) => e.Date != entry.Date);
   entries.push(entry);
   storeEntries(entries);
 };

@@ -10,19 +10,19 @@ function NavBar({ onReset, onAdd }) {
           Red Moon 🌕
         </Navbar.Brand>
         <Nav>
+          <div className="nav-link">
+            <Link to="/settings">⚙️ Settings</Link>
+          </div>
           {!!onReset && (
             <Nav.Link style={{ color: "white" }} onClick={onReset}>
-              Clear
+              🗑️ Clear
             </Nav.Link>
           )}
           {!!onAdd && (
             <Nav.Link style={{ color: "white" }} onClick={onAdd}>
-              + Entry
+              ➕ Entry
             </Nav.Link>
           )}
-          <div className="nav-link">
-            <Link to="/settings">Settings</Link>
-          </div>
         </Nav>
       </Navbar>
     </>

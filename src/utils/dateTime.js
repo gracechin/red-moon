@@ -30,3 +30,9 @@ export const newDateByDiff = (d, diff) => {
   nd.setDate(d.getDate() + diff);
   return nd;
 };
+
+export const newDateStrByDiff = (dateStr, diff) => {
+  const d = new Date(dateStr);
+  const nd = newDateByDiff(d, diff);
+  return transformDateToDateStr(nd);
+};
