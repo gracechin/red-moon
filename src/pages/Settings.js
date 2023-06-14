@@ -81,6 +81,7 @@ function SettingsPage() {
               <Form.Control
                 name={CHART_NUM_OF_CYCLE_DAYS_KEY}
                 type="number"
+                min={1}
                 defaultValue={defSettings[CHART_NUM_OF_CYCLE_DAYS_KEY]}
               />
             </Col>
