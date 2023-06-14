@@ -8,7 +8,7 @@ import {
 import {
   PERIOD_ENTRY_MODE,
   PeriodEntryModal,
-  SimpleModal,
+  ConfirmModal,
 } from "../components/Modal.js";
 import { PeriodChart } from "../components/Chart";
 import NavBar from "../components/NavBar";
@@ -22,7 +22,7 @@ import { newDateStrByDiff } from "../utils/dateTime";
 
 function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
-  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState(-1);
   const [storedEntries, setStoredEntries] = useState(getStoredEntries());
   const settings = getSettings();
@@ -31,20 +31,29 @@ function HomePage() {
     chartStartDate,
     settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
   );
-
   const entries = storedEntries.filter((e) => {
     const d = new Date(e.Date);
     return new Date(chartEndDate) > d && new Date(chartStartDate) <= d;
   });
-
   const refreshData = () => {
     setStoredEntries(getStoredEntries());
+  };
+  const onCloseEntryModal = () => setShowEntryModal(false);
+  const onSubmitEntryModal = () => {
+    refreshData();
+    onCloseEntryModal();
+  };
+  const onCloseClearConfirmModal = () => setShowClearConfirmModal(false);
+  const onClearAllData = () => {
+    clearStoredEntries();
+    refreshData();
+    onCloseClearConfirmModal();
   };
 
   return (
     <div className="wrapper">
       <NavBar
-        onReset={() => setShowDeleteConfirmModal(true)}
+        onReset={() => setShowClearConfirmModal(true)}
         onAdd={() => {
           setSelectedColumn(-1);
           setShowEntryModal(true);
@@ -62,11 +71,8 @@ function HomePage() {
       />
       <PeriodEntryModal
         show={showEntryModal}
-        onHide={() => setShowEntryModal(false)}
-        onSubmit={() => {
-          refreshData();
-          setShowEntryModal(false);
-        }}
+        onHide={onCloseEntryModal}
+        onSubmit={onSubmitEntryModal}
         defaultData={
           selectedColumn > -1 && entries.length > 0
             ? entries[selectedColumn]
@@ -80,21 +86,16 @@ function HomePage() {
           selectedColumn > -1 ? PERIOD_ENTRY_MODE.EDIT : PERIOD_ENTRY_MODE.NEW
         }
       />
-      <SimpleModal
-        show={showDeleteConfirmModal}
-        heading="Delete all data?"
-        onHide={() => setShowDeleteConfirmModal(false)}
-      >
-        <Button
-          variant="primary"
-          onClick={() => setShowDeleteConfirmModal(false)}
-        >
-          Cancel
-        </Button>
-        <Button variant="secondary" onClick={clearStoredEntries}>
-          Delete
-        </Button>
-      </SimpleModal>
+      <ConfirmModal
+        show={showClearConfirmModal}
+        heading="Clear all data?"
+        size="sm"
+        onClose={onCloseClearConfirmModal}
+        onSubmit={onClearAllData}
+        bodyText="Cleared data cannot be recovered."
+        submitButtonText="Clear all"
+        onHide={onCloseClearConfirmModal}
+      />
     </div>
   );
 }

@@ -4,12 +4,12 @@ import { storeEntry } from "../utils/dataStorage";
 import { getCurrentDateStr, getCurrentTimeStr } from "../utils/dateTime";
 import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
 
-export function SimpleModal({ show, heading, children, footer, onHide }) {
+export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (
     <Modal
       onHide={onHide}
       show={show}
-      size="lg"
+      size={size || "lg"}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
@@ -19,6 +19,34 @@ export function SimpleModal({ show, heading, children, footer, onHide }) {
       <Modal.Body>{children}</Modal.Body>
       {footer && <Modal.Footer>{footer}</Modal.Footer>}
     </Modal>
+  );
+}
+
+export function ConfirmModal({
+  show,
+  heading,
+  onClose,
+  onSubmit,
+  bodyText,
+  submitButtonText,
+}) {
+  return (
+    <SimpleModal show={show} heading={heading} size="sm" onHide={onClose}>
+      <div>{bodyText}</div>
+      <br />
+      <Row>
+        <Col>
+          <Button variant="primary" onClick={onClose}>
+            Cancel
+          </Button>
+        </Col>
+        <Col>
+          <Button variant="secondary" onClick={onSubmit}>
+            {submitButtonText}
+          </Button>
+        </Col>
+      </Row>
+    </SimpleModal>
   );
 }
 
