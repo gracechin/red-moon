@@ -329,9 +329,9 @@ const calcYDomain = (entries) => {
   return [calcMin, calcMax < max ? max + 2 : calcMax];
 };
 
-export function PeriodChart({ entries, onClickColumn, compressed }) {
-  const MIN_COL_WIDTH = 20;
-  const fontSize = compressed ? "9px" : "small";
+export function PeriodChart({ entries, onClickColumn }) {
+  const MIN_COL_WIDTH = 27;
+  const fontSize = "small";
   const TABLE_HEADING_WIDTH = 100;
   const chartWrapperRef = useRef();
   const yDomain = calcYDomain(entries);

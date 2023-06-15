@@ -52,23 +52,6 @@ function SettingsPage() {
       <Container className="settings">
         <h1>Settings</h1>
         <Form method="post" onSubmit={handleSubmit}>
-          <FieldRow name="Chart view">
-            <ToggleButtonGroup
-              type="radio"
-              name={CHART_VIEW_KEY}
-              defaultValue={defSettings[CHART_VIEW_KEY]}
-            >
-              {Object.values(CHART_VIEW_OPTIONS).map((opt, idx) => (
-                <ToggleButton
-                  key={idx}
-                  id={`tbg-btn-${opt.name}`}
-                  value={opt.name}
-                >
-                  {opt.name}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </FieldRow>
           <FieldRow name="Chart start date">
             <Form.Control
               name={CHART_START_DATE_KEY}

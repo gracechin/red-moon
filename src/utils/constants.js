@@ -98,20 +98,12 @@ export const ENTRY_INPUT_FIELDS = [
   },
 ];
 
-export const CHART_VIEW_KEY = "Chart view";
 export const CHART_START_DATE_KEY = "Chart start date";
 export const DEF_TEMP_TAKEN_TIME_KEY = "Default time taken key";
 export const CHART_NUM_OF_CYCLE_DAYS_KEY = "Chart # of cycle days";
 export const DATA_ENTRIES_KEY = "Entries";
 export const SETTINGS_KEY = "Settings";
-
-export const CHART_VIEW_OPTIONS = {
-  NORMAL: { name: "Normal" },
-  COMPRESSED: { name: "Compressed" },
-};
-
 export const DEFAULT_SETTINGS = {
-  [CHART_VIEW_KEY]: CHART_VIEW_OPTIONS.NORMAL.name,
   [CHART_NUM_OF_CYCLE_DAYS_KEY]: 40,
   [DEF_TEMP_TAKEN_TIME_KEY]: "08:00",
 };

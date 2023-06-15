@@ -13,8 +13,6 @@ import {
 import { PeriodChart } from "../components/PeriodChart";
 import NavBar from "../components/NavBar";
 import {
-  CHART_VIEW_OPTIONS,
-  CHART_VIEW_KEY,
   CHART_START_DATE_KEY,
   CHART_NUM_OF_CYCLE_DAYS_KEY,
 } from "../utils/constants";
@@ -65,9 +63,6 @@ function HomePage() {
           setSelectedColumn(colIdx);
           setShowEntryModal(true);
         }}
-        compressed={
-          settings[CHART_VIEW_KEY] == CHART_VIEW_OPTIONS.COMPRESSED.name
-        }
       />
       <PeriodEntryModal
         show={showEntryModal}
