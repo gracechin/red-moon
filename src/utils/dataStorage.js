@@ -57,6 +57,7 @@ const genDefaultEntries = () => {
   const startDate = settings[CHART_START_DATE_KEY];
   return range(0, numEntries).map((i) => ({
     Date: newDateStrByDiff(startDate, i),
+    Situation: "None",
   }));
 };
 

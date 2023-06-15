@@ -3,13 +3,13 @@ import { Col, Row, Button, Form, Modal } from "react-bootstrap";
 import { storeEntry, getSettings } from "../utils/dataStorage";
 import {
   getCurrentDateStr,
-  getCurrentTimeStr,
   transformDateStrToDateLabel,
 } from "../utils/dateTime";
 import {
-  DAILY_SITUATION_OPTIONS,
   DEF_TEMP_TAKEN_TIME_KEY,
+  ENTRY_INPUT_FIELDS,
 } from "../utils/constants";
+import { FormInput } from "./FormInput";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (
@@ -74,14 +74,16 @@ export function PeriodEntryModal({
   const settings = getSettings();
   const defTime = settings[DEF_TEMP_TAKEN_TIME_KEY];
   const defDate = defaultData.Date;
-  const defSituation =
-    (!isAddNewMode && defaultData.Situation) ||
-    DAILY_SITUATION_OPTIONS.NONE.name;
+
+  const fieldsConfig = ENTRY_INPUT_FIELDS.map((f) =>
+    defaultData[f.name] ? { ...f, defaultValue: defaultData[f.name] } : f
+  );
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
     storeEntry({ ...defaultData, ...formJson });
     onSubmit && onSubmit();
   }
@@ -132,25 +134,11 @@ export function PeriodEntryModal({
             </Col>
           </Row>
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formSituation">
-          <Form.Label>Daily Situation</Form.Label>
-          <br />
-          {Object.values(DAILY_SITUATION_OPTIONS).map((option, idx) => {
-            return (
-              <Form.Check
-                key={idx}
-                type="radio"
-                name="Situation"
-                id={option.name}
-                value={option.name}
-                label={`${option.icon ? option.icon + " " : ""}${option.name}`}
-                defaultChecked={defSituation === option.name}
-              />
-            );
-          })}
-        </Form.Group>
+        {fieldsConfig.map((f) => (
+          <FormInput {...f} />
+        ))}
         <Button variant="primary" type="submit">
-          Submit
+          Save
         </Button>
       </Form>
     </SimpleModal>

@@ -36,38 +36,67 @@ export const DAILY_SITUATION_OPTIONS = {
   DRY: {
     name: "Dry",
     icon: "🌵",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.DRY],
+    value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.DRY],
   },
   STICKY: {
     name: "Sticky",
     icon: "🩹",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.FILLED],
+    value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.FILLED],
   },
   CREAMY: {
     name: "Creamy",
     icon: "☁️",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.FILLED, DRY_DATA.FILLED],
+    value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.FILLED, DRY_DATA.FILLED],
   },
   EGG_WHITE: {
     name: "Egg white",
     icon: "🍳",
-    fluidData: [EGG_WHITE_DATA.FILLED, CREAMY_DATA.FILLED, DRY_DATA.FILLED],
+    value: [EGG_WHITE_DATA.FILLED, CREAMY_DATA.FILLED, DRY_DATA.FILLED],
   },
   SPOTTING: {
     name: "Spotting",
     icon: "🩸",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.SPOTTING],
+    value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.SPOTTING],
   },
   PERIOD: {
     name: "Period",
     icon: "🩸🩸",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.PERIOD],
+    value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.PERIOD],
   },
   NONE: {
     name: "None",
-    fluidData: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY],
+    value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY],
   },
 };
+
+export const ENTRY_INPUT_FIELDS = [
+  {
+    fieldType: "CheckOptions",
+    label: "Daily Situation",
+    name: "Situation",
+    options: Object.values(DAILY_SITUATION_OPTIONS),
+    type: "radio",
+    defaultValue: "None",
+  },
+  {
+    fieldType: "Options",
+    label: "Intercourse",
+    name: "Intercourse",
+    icon: "💕",
+    options: [
+      { name: "Condom", icon: "🍌" },
+      { name: "Raw", icon: "🍆" },
+    ],
+    type: "checkbox",
+  },
+  {
+    fieldType: "Switch",
+    label: "Exercise",
+    name: "Excercise",
+    icon: "👟",
+    type: "switch",
+  },
+];
 
 export const CHART_VIEW_KEY = "Chart view";
 export const CHART_START_DATE_KEY = "Chart start date";

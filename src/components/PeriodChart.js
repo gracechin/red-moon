@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { DAILY_SITUATION_OPTIONS } from "../utils/constants";
+import { ENTRY_INPUT_FIELDS } from "../utils/constants";
 import { transformDateStrToDateLabel } from "../utils/dateTime";
 
 function SynchronisedGraph({
@@ -252,15 +252,34 @@ const formatDayOfWeek = (dateStr) => {
   return DAYS_OF_WEEK[dayIdx];
 };
 
-const getFluidData = (situation) => {
-  const matchedOptions = Object.values(DAILY_SITUATION_OPTIONS).filter(
-    (option) => option.name == situation
-  );
-  if (matchedOptions.length > 0) return matchedOptions[0].fluidData;
-  return DAILY_SITUATION_OPTIONS.NONE.fluidData;
+const genEmptyCellData = (field) => [{ ...field, value: "-" }];
+
+const getOptionCellData = (field, value) => {
+  const matchedOptions = field.options.filter((opt) => opt.name === value);
+  if (matchedOptions.length == 0)
+    throw `getDataForEntry: cannot find option - ${value}`;
+  const option = matchedOptions[0];
+  return option.value || [{ ...option, value: option.icon }];
 };
 
-const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
+const getSwitchCellData = (field, value) => {
+  if (value === "on") return [{ ...field, value: field.icon }];
+  return genEmptyCellData(field);
+};
+
+const getCellDataForField = (field, value) => {
+  if (!value) return genEmptyCellData(field);
+  const matchedFields = ENTRY_INPUT_FIELDS.filter((f) => f.name === field.name);
+  if (matchedFields.length == 0)
+    throw `getDataForEntry: cannot find fieldname - ${field.name}`;
+  const f = matchedFields[0];
+  if (f.options) return getOptionCellData(f, value);
+  if (f.fieldType === "Switch") return getSwitchCellData(f, value);
+  return genEmptyCellData(field);
+};
+
+const transformEntryToCellData = (entry, idx) => {
+  const { Temperature, Date, Time, ...rest } = entry;
   const [_yyyy, _mm, dd] = Date.split("-");
   return {
     table1: [
@@ -282,10 +301,11 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
       y: Temperature ? parseFloat(Temperature) * 10 : 0,
       missingData: !Temperature,
     },
-    table2: [
-      { name: "Temp °C", icon: "🌡️", value: Temperature || "-" },
-      ...getFluidData(Situation),
-    ],
+    table2: [{ name: "Temp °C", icon: "🌡️", value: Temperature || "-" }].concat(
+      ENTRY_INPUT_FIELDS.map((f) =>
+        getCellDataForField(f, entry[f.name])
+      ).flat()
+    ),
   };
 };
 
@@ -319,7 +339,7 @@ export function PeriodChart({ entries, onClickColumn, compressed }) {
 
   useEffect(() => {
     const maxNumCols = Math.floor(chartSize.width / MIN_COL_WIDTH);
-    const data = entries.map(transformEntryToData);
+    const data = entries.map(transformEntryToCellData);
     const numColsVisible = Math.min(maxNumCols, data.length);
     setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
   }, [chartSize, startIndex]);
