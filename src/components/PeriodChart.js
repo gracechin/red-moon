@@ -125,7 +125,9 @@ function TableColumn({
           keySegment={columnIndex}
           idx={idx}
           fontSize={fontSize}
-          iconClassname={`${d.iconClassname || ""} ${iconClassname || ""}`}
+          iconClassname={`icon-base ${d.iconClassname || ""} ${
+            iconClassname || ""
+          }`}
           value={d[valueKey]}
         />
       ))}
@@ -246,18 +248,22 @@ const ChartOverlay = ({
 };
 
 const DAYS_OF_WEEK = ["🌞", "M", "T", "W", "R", "F", "S"];
+const TIME_CELL_DATA_BASE = { name: "Temp Taken", icon: "🕔" };
+const TEMP_CELL_DATA_BASE = { name: "Temp °C", icon: "🌡️" };
 
-const formatDayOfWeek = (dateStr) => {
-  const dayIdx = new Date(dateStr).getDay();
-  return DAYS_OF_WEEK[dayIdx];
+const getMatchedFieldByName = (name) => {
+  const matchedFields = ENTRY_INPUT_FIELDS.filter((f) => f.name === name);
+  if (matchedFields.length == 0) throw `Cannot find fieldname - ${name}`;
+  return matchedFields[0];
 };
 
-const genEmptyCellData = (field) => [{ ...field, value: "-" }];
+const genEmptyCellData = (field) => [
+  { ...field, value: "-", iconClassname: "icon" },
+];
 
 const getOptionCellData = (field, value) => {
   const matchedOptions = field.options.filter((opt) => opt.name === value);
-  if (matchedOptions.length == 0)
-    throw `getDataForEntry: cannot find option - ${value}`;
+  if (matchedOptions.length == 0) throw `Cannot find option - ${value}`;
   const option = matchedOptions[0];
   return option.value || [{ ...option, value: option.icon }];
 };
@@ -267,45 +273,47 @@ const getSwitchCellData = (field, value) => {
   return genEmptyCellData(field);
 };
 
+const getDateCellData = (dateStr) => {
+  const [_yyyy, _mm, dd] = dateStr.split("-");
+  const dayIdx = new Date(dateStr).getDay();
+  const dow = DAYS_OF_WEEK[dayIdx];
+  return [
+    { name: "Date", icon: "📅", value: dd },
+    { name: "Week Day", icon: "🗓️", value: dow },
+  ];
+};
+
 const getCellDataForField = (field, value) => {
   if (!value) return genEmptyCellData(field);
-  const matchedFields = ENTRY_INPUT_FIELDS.filter((f) => f.name === field.name);
-  if (matchedFields.length == 0)
-    throw `getDataForEntry: cannot find fieldname - ${field.name}`;
-  const f = matchedFields[0];
+  const f = getMatchedFieldByName(field.name);
   if (f.options) return getOptionCellData(f, value);
   if (f.fieldType === "Switch") return getSwitchCellData(f, value);
   return genEmptyCellData(field);
 };
 
 const transformEntryToCellData = (entry, idx) => {
-  const { Temperature, Date, Time, ...rest } = entry;
-  const [_yyyy, _mm, dd] = Date.split("-");
+  const { Temperature, Date, Time } = entry;
   return {
     table1: [
       { name: "Cycle  Day", icon: "📅", value: `${idx + 1}` },
-      { name: "Date", icon: "📅", value: dd },
-      {
-        name: "Week Day",
-        icon: "🗓️",
-        value: formatDayOfWeek(Date),
-      },
-      {
-        name: "Temp Taken",
-        icon: "🕔",
-        value: Time ? `${Time}` : "-",
-      },
+      ...getDateCellData(Date),
+      ...(Time
+        ? [{ ...TIME_CELL_DATA_BASE, value: Time }]
+        : genEmptyCellData(TIME_CELL_DATA_BASE)),
     ],
     graph: {
       x: idx,
       y: Temperature ? parseFloat(Temperature) * 10 : 0,
       missingData: !Temperature,
     },
-    table2: [{ name: "Temp °C", icon: "🌡️", value: Temperature || "-" }].concat(
-      ENTRY_INPUT_FIELDS.map((f) =>
+    table2: [
+      ...(Temperature
+        ? [{ ...TEMP_CELL_DATA_BASE, value: Temperature }]
+        : genEmptyCellData(TEMP_CELL_DATA_BASE)),
+      ...ENTRY_INPUT_FIELDS.map((f) =>
         getCellDataForField(f, entry[f.name])
-      ).flat()
-    ),
+      ).flat(),
+    ],
   };
 };
 
@@ -322,9 +330,9 @@ const calcYDomain = (entries) => {
 };
 
 export function PeriodChart({ entries, onClickColumn, compressed }) {
-  const MIN_COL_WIDTH = compressed ? 25 : 35;
+  const MIN_COL_WIDTH = 20;
   const fontSize = compressed ? "9px" : "small";
-  const TABLE_HEADING_WIDTH = MIN_COL_WIDTH * 3;
+  const TABLE_HEADING_WIDTH = 100;
   const chartWrapperRef = useRef();
   const yDomain = calcYDomain(entries);
   const [startIndex, setStartIndex] = useState(0);
