@@ -165,9 +165,14 @@ html, body, #app {
     .table-row-heading {
       position: absolute;
       right: 100%;
-      text-align: right;
-      padding-right: @spacingUnit * 0.5;
+      text-align: left;
+      padding-right: @spacingUnit * 2;
       font-size: small;
+
+      &-icon {
+        text-align: right;
+        padding-right: @spacingUnit * 0.5;
+      }
 
       .table-block {
         border: solid 0.5px transparent;

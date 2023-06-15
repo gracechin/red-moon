@@ -97,22 +97,27 @@ function TableBlock({ keySegment, idx, fontSize, iconClassname, value }) {
 }
 
 function TableColumn({
-  width,
+  style,
+  className,
+  iconClassname,
   onChangeColumn,
   onClick,
   columnIndex,
   fontSize,
   isActive,
   data,
+  valueKey,
 }) {
-  const columnStyle = { flex: `0 1 ${width}px` };
+  const setActiveCol = () => onChangeColumn({ activeColumn: columnIndex });
+  const removeActiveCol = () => onChangeColumn({ activeColumn: -1 });
+  const noReaction = () => {};
   return (
     <div
-      style={columnStyle}
-      className={`table-column ${isActive ? "active" : ""}`}
-      onMouseEnter={() => onChangeColumn({ activeColumn: columnIndex })}
-      onMouseLeave={() => onChangeColumn({ activeColumn: -1 })}
-      onClick={onClick}
+      style={style || {}}
+      className={className || `table-column ${isActive ? "active" : ""}`}
+      onMouseEnter={onChangeColumn ? setActiveCol : noReaction}
+      onMouseLeave={onChangeColumn ? removeActiveCol : noReaction}
+      onClick={onClick || noReaction}
       key={`table-col-${columnIndex}`}
     >
       {data.map((d, idx) => (
@@ -120,8 +125,8 @@ function TableColumn({
           keySegment={columnIndex}
           idx={idx}
           fontSize={fontSize}
-          iconClassname={d.iconClassname}
-          value={d.value}
+          iconClassname={`${d.iconClassname || ""} ${iconClassname || ""}`}
+          value={d[valueKey]}
         />
       ))}
     </div>
@@ -136,7 +141,6 @@ function SynchronisedTable({
   onChangeColumn,
   onClickColumn,
   headingColumnKey,
-  hideHeadingColumn,
   rowHeadingWidth,
   fontSize,
 }) {
@@ -144,35 +148,40 @@ function SynchronisedTable({
     !!data &&
     data.length > 0 && (
       <div className="Table">
-        {!hideHeadingColumn && (
-          <div
-            className="table-row-heading"
-            style={{ width: `${rowHeadingWidth}px` }}
-          >
-            <div className="table-block table-block-head"></div>
-            {data[0].map((d, idx) => (
-              <TableBlock
-                keySegment="heading"
-                idx={idx}
-                fontSize={fontSize}
-                iconClassname={`${d.iconClassname} icon-heading`}
-                value={d[headingColumnKey]}
-              />
-            ))}
-          </div>
-        )}
+        <TableColumn
+          key={headingColumnKey}
+          columnIndex="heading"
+          data={data[0]}
+          valueKey="name"
+          className="table-row-heading"
+          iconClassname="icon-heading"
+          style={{ width: `${rowHeadingWidth}px` }}
+          fontSize={fontSize}
+        />
+        <TableColumn
+          key={headingColumnKey}
+          columnIndex="heading-icon"
+          data={data[0]}
+          valueKey="icon"
+          className="table-row-heading table-row-heading-icon"
+          iconClassname="icon-heading"
+          style={{ width: `${rowHeadingWidth}px` }}
+          fontSize={fontSize}
+        />
         {data.map((d, i) => {
           const colIdx = startIndex + i;
           return (
             <TableColumn
+              isHeading={false}
               key={colIdx}
               columnIndex={colIdx}
               isActive={activeColumn == colIdx}
               onChangeColumn={onChangeColumn}
               onClick={onClickColumn}
-              columnWidth={width / data.length}
               data={d}
               fontSize={fontSize}
+              valueKey="value"
+              style={{ flex: `0 1 ${width / data.length}px` }}
             />
           );
         })}
@@ -255,15 +264,15 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
   const [_yyyy, _mm, dd] = Date.split("-");
   return {
     table1: [
-      { name: "Cycle  Day", icon: "Day", value: `${idx + 1}` },
-      { name: "Date 📅", icon: "📅", value: dd },
+      { name: "Cycle  Day", icon: "📅", value: `${idx + 1}` },
+      { name: "Date", icon: "📅", value: dd },
       {
-        name: "Week Day 🗓️",
+        name: "Week Day",
         icon: "🗓️",
         value: formatDayOfWeek(Date),
       },
       {
-        name: "Temp Taken 🕔",
+        name: "Temp Taken",
         icon: "🕔",
         value: Time ? `${Time}` : "-",
       },
@@ -274,7 +283,7 @@ const transformEntryToData = ({ Temperature, Date, Time, Situation }, idx) => {
       missingData: !Temperature,
     },
     table2: [
-      { name: "Temp °C 🌡️", icon: "🌡️", value: Temperature || "-" },
+      { name: "Temp °C", icon: "🌡️", value: Temperature || "-" },
       ...getFluidData(Situation),
     ],
   };
@@ -292,15 +301,10 @@ const calcYDomain = (entries) => {
   return [calcMin, calcMax < max ? max + 2 : calcMax];
 };
 
-export function PeriodChart({
-  entries,
-  onClickColumn,
-  hideTableHeading,
-  compressed,
-}) {
+export function PeriodChart({ entries, onClickColumn, compressed }) {
   const MIN_COL_WIDTH = compressed ? 25 : 35;
   const fontSize = compressed ? "9px" : "small";
-  const TABLE_HEADING_WIDTH = compressed ? MIN_COL_WIDTH : MIN_COL_WIDTH * 3;
+  const TABLE_HEADING_WIDTH = MIN_COL_WIDTH * 3;
   const chartWrapperRef = useRef();
   const yDomain = calcYDomain(entries);
   const [startIndex, setStartIndex] = useState(0);
@@ -373,8 +377,6 @@ export function PeriodChart({
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
-          headingColumnKey={compressed ? "icon" : "name"}
-          hideHeadingColumn={hideTableHeading}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
           fontSize={fontSize}
         />
@@ -405,8 +407,6 @@ export function PeriodChart({
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickCol}
-          headingColumnKey={compressed ? "icon" : "name"}
-          hideHeadingColumn={hideTableHeading}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
           fontSize={fontSize}
         />
