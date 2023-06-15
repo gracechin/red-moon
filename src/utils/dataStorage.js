@@ -62,8 +62,12 @@ const genDefaultEntries = () => {
 };
 
 export const getStoredEntries = () => {
+  return getStored(DATA_ENTRIES_KEY) || [];
+};
+
+export const getAllEntries = () => {
   return genDefaultEntries().map((defEntry) => {
-    const entries = getStored(DATA_ENTRIES_KEY) || [];
+    const entries = getStoredEntries();
     const matchedEntries = entries.filter((e) => e.Date == defEntry.Date);
     if (matchedEntries.length == 0) return defEntry;
     return matchedEntries[0];
@@ -77,8 +81,15 @@ export const storeEntries = (entries) => {
   localStorage.setItem(DATA_ENTRIES_KEY, JSON.stringify(sortedEntries));
 };
 
+export const addEntries = (entriesToAdd) => {
+  const entriesToAddDates = entriesToAdd.map((e) => e.Date);
+  var entries = getAllEntries();
+  entries = entries.filter((e) => !entriesToAddDates.includes(e.Date));
+  storeEntries([...entries, ...entriesToAdd]);
+};
+
 export const storeEntry = (entry) => {
-  var entries = getStoredEntries();
+  var entries = getAllEntries();
   entries = entries.filter((e) => e.Date != entry.Date);
   entries.push(entry);
   storeEntries(entries);

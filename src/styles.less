@@ -1,5 +1,8 @@
 @backgroundColor: #414770;
 @textColor: white;
+@codeTextColor: #D63384;
+@warningTextColor: #F85966;
+@codeBackgroundColor: tint(@codeTextColor, 80%);
 @tableTextColor: #4A1F41;
 @tableHoverTextColor: white;
 @textButtonColor: white;
@@ -37,6 +40,12 @@ html, body, #app {
   font-family: 'Patrick Hand', 'Segoe UI', 'Helvetica', sans-serif;
 }
 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+  color: @codeTextColor;
+}
+
 #app {
   padding: 50px 15%;
   width: 100%;
@@ -44,12 +53,49 @@ html, body, #app {
 .wrapper {
   margin: 0 10px
 }
+.navbar-brand {
+  color: @textButtonColor;
+  &:hover {
+    color: @textButtonColor;
+  }
+}
 .nav-link {
+  color: @textButtonColor;
+  &:hover, &:focus {
+    color: @textButtonColor;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
   a {
     color: @textButtonColor;
     text-decoration: none;  
   }
 }
+button.btn.btn-primary {
+  color: @backgroundColor;
+  font-weight: bold;
+  background: @textButtonColor;
+}
+.errorMsg {
+  color: @warningTextColor;
+}
+textarea.error {
+  border: solid 1px @warningTextColor;
+}
+.code-snippet-scroll-container {
+  height: 30vh;
+  overflow: auto;
+  background-color: @codeBackgroundColor;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: small;
+}
+.align-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .Graph {
   display: flex;
   width: 100%;

@@ -2,27 +2,19 @@ import React from "react";
 import { Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-function NavBar({ onReset, onAdd }) {
+function NavBar({ onReset, onAdd, onExport, onImport }) {
   return (
     <>
       <Navbar>
-        <Navbar.Brand href="/" style={{ color: "white" }}>
-          Red Moon 🌕
-        </Navbar.Brand>
+        <Navbar.Brand href="/">Red Moon 🌕</Navbar.Brand>
         <Nav>
           <div className="nav-link">
             <Link to="/settings">⚙️ Settings</Link>
           </div>
-          {!!onReset && (
-            <Nav.Link style={{ color: "white" }} onClick={onReset}>
-              🗑️ Clear
-            </Nav.Link>
-          )}
-          {!!onAdd && (
-            <Nav.Link style={{ color: "white" }} onClick={onAdd}>
-              ➕ Entry
-            </Nav.Link>
-          )}
+          {!!onReset && <Nav.Link onClick={onReset}>🗑️ Clear</Nav.Link>}
+          {!!onAdd && <Nav.Link onClick={onAdd}>+ Entry</Nav.Link>}
+          {!!onExport && <Nav.Link onClick={onExport}>📤 Export</Nav.Link>}
+          {!!onImport && <Nav.Link onClick={onImport}>📥 Import</Nav.Link>}
         </Nav>
       </Navbar>
     </>

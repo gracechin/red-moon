@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row, Button, Form, Modal } from "react-bootstrap";
-import { storeEntry, getSettings } from "../utils/dataStorage";
+import { storeEntry, getSettings, addEntries } from "../utils/dataStorage";
 import {
   getCurrentDateStr,
   transformDateStrToDateLabel,
@@ -29,6 +29,79 @@ export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   );
 }
 
+const validateData = (data) => {
+  const valid = false;
+  var parsedData;
+  try {
+    parsedData = JSON.parse(data);
+  } catch (e) {
+    return { valid, msg: "Data cannot be parsed as JSON. Please try again!" };
+  }
+  if (parsedData.length == 0)
+    return { valid, msg: "No data entries detected. Please try again!" };
+  if (!parsedData.every((d) => d.Date))
+    return { valid, msg: "Invalid data structure. Please try again!" };
+  return { valid: true, msg: "" };
+};
+
+export function ImportModal({ show, onClose, onSubmit }) {
+  const [data, setData] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const isError = errorMsg.length > 0;
+  const onChange = (e) => {
+    setData(e.target.value);
+    setErrorMsg("");
+  };
+  const importData = () => {
+    const res = validateData(data);
+    setErrorMsg(res.msg);
+    if (!res.valid) return;
+    addEntries(JSON.parse(data));
+    onSubmit();
+    onClose();
+  };
+  return (
+    <SimpleModal
+      heading="Import entries"
+      show={show}
+      onHide={() => {
+        onClose();
+        setErrorMsg("");
+      }}
+    >
+      <Form.Control
+        as="textarea"
+        className={isError && "error"}
+        rows={3}
+        type="text"
+        onChange={onChange}
+        placeholder="Enter data in JSON format [{...}]"
+      />
+      {isError > 0 && <div className="errorMsg">{errorMsg}</div>}
+      <br />
+      <Button variant="primary" onClick={importData}>
+        Import
+      </Button>
+    </SimpleModal>
+  );
+}
+
+export function ExportModal({ show, data, onClose }) {
+  const dataStr = JSON.stringify(data);
+  const copyToClipboard = () => navigator.clipboard.writeText(dataStr);
+  return (
+    <SimpleModal heading="Export entries" show={show} onHide={onClose}>
+      <div className="code-snippet-scroll-container">
+        <code>{dataStr}</code>
+      </div>
+      <br />
+      <Button variant="primary" onClick={copyToClipboard}>
+        Copy to Clipboard 📋
+      </Button>
+    </SimpleModal>
+  );
+}
+
 export function ConfirmModal({
   show,
   heading,
@@ -47,8 +120,14 @@ export function ConfirmModal({
             Cancel
           </Button>
         </Col>
-        <Col>
-          <Button variant="secondary" onClick={onSubmit}>
+        <Col className="align-right">
+          <Button
+            variant="secondary"
+            onClick={() => {
+              onSubmit();
+              onClose();
+            }}
+          >
             {submitButtonText}
           </Button>
         </Col>
@@ -83,8 +162,8 @@ export function PeriodEntryModal({
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
     storeEntry({ ...defaultData, ...formJson });
+    onHide();
     onSubmit && onSubmit();
   }
 

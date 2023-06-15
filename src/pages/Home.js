@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import {
   clearStoredEntries,
-  getStoredEntries,
+  getAllEntries,
   getSettings,
+  getStoredEntries,
 } from "../utils/dataStorage";
 import {
   PERIOD_ENTRY_MODE,
   PeriodEntryModal,
   ConfirmModal,
+  ExportModal,
+  ImportModal,
 } from "../components/Modal.js";
 import { PeriodChart } from "../components/PeriodChart";
 import NavBar from "../components/NavBar";
@@ -20,32 +23,28 @@ import { newDateStrByDiff } from "../utils/dateTime";
 
 function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState(-1);
-  const [storedEntries, setStoredEntries] = useState(getStoredEntries());
+  const [allEntries, setAllEntries] = useState(getAllEntries());
   const settings = getSettings();
   const chartStartDate = settings[CHART_START_DATE_KEY];
   const chartEndDate = newDateStrByDiff(
     chartStartDate,
     settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
   );
-  const entries = storedEntries.filter((e) => {
+  const entries = allEntries.filter((e) => {
     const d = new Date(e.Date);
     return new Date(chartEndDate) > d && new Date(chartStartDate) <= d;
   });
   const refreshData = () => {
-    setStoredEntries(getStoredEntries());
+    setAllEntries(getAllEntries());
   };
   const onCloseEntryModal = () => setShowEntryModal(false);
-  const onSubmitEntryModal = () => {
-    refreshData();
-    onCloseEntryModal();
-  };
-  const onCloseClearConfirmModal = () => setShowClearConfirmModal(false);
   const onClearAllData = () => {
     clearStoredEntries();
     refreshData();
-    onCloseClearConfirmModal();
   };
 
   return (
@@ -56,6 +55,8 @@ function HomePage() {
           setSelectedColumn(-1);
           setShowEntryModal(true);
         }}
+        onExport={() => setShowExportModal(true)}
+        onImport={() => setShowImportModal(true)}
       />
       <PeriodChart
         entries={entries}
@@ -67,7 +68,7 @@ function HomePage() {
       <PeriodEntryModal
         show={showEntryModal}
         onHide={onCloseEntryModal}
-        onSubmit={onSubmitEntryModal}
+        onSubmit={refreshData}
         defaultData={
           selectedColumn > -1 && entries.length > 0
             ? entries[selectedColumn]
@@ -84,12 +85,20 @@ function HomePage() {
       <ConfirmModal
         show={showClearConfirmModal}
         heading="Clear all data?"
-        size="sm"
-        onClose={onCloseClearConfirmModal}
+        onClose={() => setShowClearConfirmModal(false)}
         onSubmit={onClearAllData}
         bodyText="Cleared data cannot be recovered."
         submitButtonText="Clear all"
-        onHide={onCloseClearConfirmModal}
+      />
+      <ExportModal
+        show={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        data={getStoredEntries()}
+      />
+      <ImportModal
+        show={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onSubmit={refreshData}
       />
     </div>
   );
