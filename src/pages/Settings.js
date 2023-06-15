@@ -47,14 +47,14 @@ function SettingsPage() {
       <Container className="settings">
         <h1>Settings</h1>
         <Form method="post" onSubmit={handleSubmit}>
-          <FieldRow name="Chart start date">
+          <FieldRow name="Cycle start date">
             <Form.Control
               name={CHART_START_DATE_KEY}
               type="date"
               defaultValue={defSettings[CHART_START_DATE_KEY]}
             />
           </FieldRow>
-          <FieldRow name="Chart # of cycle days">
+          <FieldRow name="Number of cycle days">
             <Form.Control
               name={CHART_NUM_OF_CYCLE_DAYS_KEY}
               type="number"

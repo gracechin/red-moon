@@ -1,5 +1,5 @@
 import React from "react";
-import { Nav, Navbar } from "react-bootstrap";
+import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function NavBar({ onReset, onAdd, onExport, onImport }) {
@@ -8,13 +8,20 @@ function NavBar({ onReset, onAdd, onExport, onImport }) {
       <Navbar>
         <Navbar.Brand href="/">Red Moon 🌕</Navbar.Brand>
         <Nav>
-          <div className="nav-link">
-            <Link to="/settings">⚙️ Settings</Link>
-          </div>
-          {!!onReset && <Nav.Link onClick={onReset}>🗑️ Clear</Nav.Link>}
+          {onReset && onExport && onImport && (
+            <NavDropdown title="More..." id="collasible-nav-dropdown">
+              <NavDropdown.Item onClick={onReset}>🗑️ Clear</NavDropdown.Item>
+              <NavDropdown.Item onClick={onExport}>📤 Export</NavDropdown.Item>
+              <NavDropdown.Item onClick={onImport}>📥 Import</NavDropdown.Item>
+            </NavDropdown>
+          )}
           {!!onAdd && <Nav.Link onClick={onAdd}>+ Entry</Nav.Link>}
-          {!!onExport && <Nav.Link onClick={onExport}>📤 Export</Nav.Link>}
-          {!!onImport && <Nav.Link onClick={onImport}>📥 Import</Nav.Link>}
+          <div className="nav-link">
+            <Link to="/settings">⚙️</Link>
+          </div>
+          <div className="nav-link">
+            <Link to="/settings">ⓘ</Link>
+          </div>
         </Nav>
       </Navbar>
     </>

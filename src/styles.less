@@ -53,10 +53,16 @@ code {
 .wrapper {
   margin: 0 10px
 }
-.navbar-brand {
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
   color: @textButtonColor;
-  &:hover {
+}
+.navbar {
+  justify-content: space-between;
+  &-brand {
     color: @textButtonColor;
+    &:hover {
+      color: @textButtonColor;
+    }
   }
 }
 .nav-link {
