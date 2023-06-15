@@ -56,6 +56,20 @@ export const OptionsInput = (props) => {
   return <ToggleButtons {...props} />;
 };
 
+export const SwitchInput = ({ label, name, compress, defaultChecked }) => {
+  return (
+    <>
+      <Form.Check
+        type="switch"
+        label={label}
+        name={name}
+        defaultChecked={defaultChecked}
+      />
+      {!compress && <br />}
+    </>
+  );
+};
+
 export const FormInput = (props) => {
   switch (props.fieldType) {
     case "CheckOptions":
@@ -63,7 +77,7 @@ export const FormInput = (props) => {
     case "Options":
       return <OptionsInput {...props} />;
     case "Switch":
-      return <Form.Check type="switch" label={props.label} name={props.name} />;
+      return <SwitchInput {...props} />;
     default:
       throw "FormInput 'fieldType' undefined";
   }

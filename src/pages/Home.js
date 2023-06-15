@@ -18,6 +18,9 @@ import NavBar from "../components/NavBar";
 import {
   CHART_START_DATE_KEY,
   CHART_NUM_OF_CYCLE_DAYS_KEY,
+  DEF_TEMP_TAKEN_TIME_KEY,
+  REQUIRED_ENTRY_INPUT_FIELDS,
+  OPTIONAL_ENTRY_INPUT_FIELDS,
 } from "../utils/constants";
 import { newDateStrByDiff } from "../utils/dateTime";
 
@@ -29,6 +32,11 @@ function HomePage() {
   const [selectedColumn, setSelectedColumn] = useState(-1);
   const [allEntries, setAllEntries] = useState(getAllEntries());
   const settings = getSettings();
+  const inputFieldsConfig = [
+    ...REQUIRED_ENTRY_INPUT_FIELDS,
+    ...OPTIONAL_ENTRY_INPUT_FIELDS.filter((f) => settings[f.name] == "on"),
+  ];
+  const defDataBase = { Time: settings[DEF_TEMP_TAKEN_TIME_KEY] };
   const chartStartDate = settings[CHART_START_DATE_KEY];
   const chartEndDate = newDateStrByDiff(
     chartStartDate,
@@ -64,15 +72,17 @@ function HomePage() {
           setSelectedColumn(colIdx);
           setShowEntryModal(true);
         }}
+        inputFieldsConfig={inputFieldsConfig}
       />
       <PeriodEntryModal
         show={showEntryModal}
+        inputFieldsConfig={inputFieldsConfig}
         onHide={onCloseEntryModal}
         onSubmit={refreshData}
         defaultData={
           selectedColumn > -1 && entries.length > 0
-            ? entries[selectedColumn]
-            : {}
+            ? { ...defDataBase, ...entries[selectedColumn] }
+            : defDataBase
         }
         dateConfig={{
           minDate: chartStartDate,

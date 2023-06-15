@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Col, Row, Button, Form, Modal } from "react-bootstrap";
-import { storeEntry, getSettings, addEntries } from "../utils/dataStorage";
+import { storeEntry, addEntries } from "../utils/dataStorage";
 import {
   getCurrentDateStr,
   transformDateStrToDateLabel,
 } from "../utils/dateTime";
-import {
-  DEF_TEMP_TAKEN_TIME_KEY,
-  ENTRY_INPUT_FIELDS,
-} from "../utils/constants";
 import { FormInput } from "./FormInput";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
@@ -148,13 +144,12 @@ export function PeriodEntryModal({
   defaultData,
   mode,
   dateConfig,
+  inputFieldsConfig,
 }) {
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
-  const settings = getSettings();
-  const defTime = settings[DEF_TEMP_TAKEN_TIME_KEY];
   const defDate = defaultData.Date;
 
-  const fieldsConfig = ENTRY_INPUT_FIELDS.map((f) =>
+  const fieldsConfig = inputFieldsConfig.map((f) =>
     defaultData[f.name] ? { ...f, defaultValue: defaultData[f.name] } : f
   );
   function handleSubmit(e) {
@@ -208,7 +203,7 @@ export function PeriodEntryModal({
               <Form.Control
                 name="Time"
                 type="time"
-                defaultValue={(!isAddNewMode && defaultData.Time) || defTime}
+                defaultValue={defaultData.Time}
               />
             </Col>
           </Row>

@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { ENTRY_INPUT_FIELDS } from "../utils/constants";
+import { ALL_ENTRY_INPUT_FIELDS } from "../utils/constants";
 import { transformDateStrToDateLabel } from "../utils/dateTime";
 
 function SynchronisedGraph({
@@ -252,7 +252,7 @@ const TIME_CELL_DATA_BASE = { name: "Temp Taken", icon: "🕔" };
 const TEMP_CELL_DATA_BASE = { name: "Temp °C", icon: "🌡️" };
 
 const getMatchedFieldByName = (name) => {
-  const matchedFields = ENTRY_INPUT_FIELDS.filter((f) => f.name === name);
+  const matchedFields = ALL_ENTRY_INPUT_FIELDS.filter((f) => f.name === name);
   if (matchedFields.length == 0) throw `Cannot find fieldname - ${name}`;
   return matchedFields[0];
 };
@@ -291,7 +291,7 @@ const getCellDataForField = (field, value) => {
   return genEmptyCellData(field);
 };
 
-const transformEntryToCellData = (entry, idx) => {
+const transformEntryToCellData = (entry, idx, fieldsConfig) => {
   const { Temperature, Date, Time } = entry;
   return {
     table1: [
@@ -310,9 +310,7 @@ const transformEntryToCellData = (entry, idx) => {
       ...(Temperature
         ? [{ ...TEMP_CELL_DATA_BASE, value: Temperature }]
         : genEmptyCellData(TEMP_CELL_DATA_BASE)),
-      ...ENTRY_INPUT_FIELDS.map((f) =>
-        getCellDataForField(f, entry[f.name])
-      ).flat(),
+      ...fieldsConfig.map((f) => getCellDataForField(f, entry[f.name])).flat(),
     ],
   };
 };
@@ -329,7 +327,7 @@ const calcYDomain = (entries) => {
   return [calcMin, calcMax < max ? max + 2 : calcMax];
 };
 
-export function PeriodChart({ entries, onClickColumn }) {
+export function PeriodChart({ entries, onClickColumn, inputFieldsConfig }) {
   const MIN_COL_WIDTH = 27;
   const fontSize = "small";
   const TABLE_HEADING_WIDTH = 100;
@@ -347,7 +345,9 @@ export function PeriodChart({ entries, onClickColumn }) {
 
   useEffect(() => {
     const maxNumCols = Math.floor(chartSize.width / MIN_COL_WIDTH);
-    const data = entries.map(transformEntryToCellData);
+    const data = entries.map((e, idx) =>
+      transformEntryToCellData(e, idx, inputFieldsConfig)
+    );
     const numColsVisible = Math.min(maxNumCols, data.length);
     setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
   }, [chartSize, startIndex]);

@@ -69,7 +69,7 @@ export const DAILY_SITUATION_OPTIONS = {
   },
 };
 
-export const ENTRY_INPUT_FIELDS = [
+export const REQUIRED_ENTRY_INPUT_FIELDS = [
   {
     fieldType: "CheckOptions",
     label: "Daily Situation",
@@ -78,6 +78,9 @@ export const ENTRY_INPUT_FIELDS = [
     type: "radio",
     defaultValue: "None",
   },
+];
+
+export const OPTIONAL_ENTRY_INPUT_FIELDS = [
   {
     fieldType: "Options",
     label: "Intercourse",
@@ -90,12 +93,41 @@ export const ENTRY_INPUT_FIELDS = [
     type: "checkbox",
   },
   {
-    fieldType: "Switch",
-    label: "Exercise",
+    fieldType: "Options",
+    label: "Exercise Intensity",
     name: "Excercise",
     icon: "👟",
+    type: "radio",
+    options: [
+      { name: "Low", icon: "L" },
+      { name: "Medium", icon: "M" },
+      { name: "High", icon: "H" },
+    ],
+  },
+  {
+    fieldType: "Options",
+    label: "Sleep Quality",
+    name: "Sleep",
+    icon: "😴",
+    type: "radio",
+    options: [
+      { name: "Poor", icon: "👎" },
+      { name: "Okay", icon: "👌" },
+      { name: "Good", icon: "👍" },
+    ],
+  },
+  {
+    fieldType: "Switch",
+    label: "Flight",
+    name: "Flight",
+    icon: "✈️",
     type: "switch",
   },
+];
+
+export const ALL_ENTRY_INPUT_FIELDS = [
+  ...REQUIRED_ENTRY_INPUT_FIELDS,
+  ...OPTIONAL_ENTRY_INPUT_FIELDS,
 ];
 
 export const CHART_START_DATE_KEY = "Chart start date";
