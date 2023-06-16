@@ -10,6 +10,15 @@ function AboutPage() {
       <Container className="settings">
         <h1>About</h1>
         <p>Track your menstrual cycles, one cycle at a time.</p>
+        <ol>
+          <li>Start with a new cycle.</li>
+          <li>Record your data by adding daily entries.</li>
+          <li>
+            Review, annotate, reflect, predict, act, & learn using the chart.
+          </li>
+          <li>Export / Save / Backup your data.</li>
+          <li>Repeat.</li>
+        </ol>
         <p>
           🛠️ Made & developed by <a href={MY_WEB_ADDRESS}>Grace Chin</a>.
         </p>
