@@ -198,7 +198,7 @@ function SynchronisedTable({
               columnIndex={colIdx}
               isActive={activeColumn == colIdx}
               onChangeColumn={onChangeColumn}
-              onClick={onClickColumn}
+              onClick={() => onClickColumn(colIdx)}
               data={d}
               fontSize={fontSize}
               valueKey="value"
@@ -257,7 +257,7 @@ const ChartOverlay = ({
               className={`column ${activeColumn == colIdx ? "active" : ""}`}
               onMouseEnter={() => onChangeColumn({ activeColumn: colIdx })}
               onMouseLeave={() => onChangeColumn({ activeColumn: -1 })}
-              onClick={onClickColumn}
+              onClick={() => onClickColumn(colIdx)}
             />
           );
         })}
@@ -417,7 +417,6 @@ export function PeriodChart({
   }, [chartSize, startIndex]);
 
   const onChangeColumn = ({ activeColumn }) => setActiveColumn(activeColumn);
-  const onClickCol = () => onClickColumn(activeColumn);
   const onNavigate = (direction) => setStartIndex(startIndex + direction);
 
   const onResize = () => {
@@ -469,7 +468,7 @@ export function PeriodChart({
           width={chartSize.width}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
-          onClickColumn={onClickCol}
+          onClickColumn={onClickColumn}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
           fontSize={fontSize}
         />
@@ -490,7 +489,7 @@ export function PeriodChart({
             data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             activeColumn={activeColumn}
             onChangeColumn={onChangeColumn}
-            onClickColumn={onClickCol}
+            onClickColumn={onClickColumn}
           />
         </div>
         <SynchronisedTable
@@ -500,7 +499,7 @@ export function PeriodChart({
           width={chartSize.width}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
-          onClickColumn={onClickCol}
+          onClickColumn={onClickColumn}
           rowHeadingWidth={TABLE_HEADING_WIDTH}
           fontSize={fontSize}
         />
