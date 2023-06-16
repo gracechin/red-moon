@@ -37,7 +37,7 @@ function SettingsPage() {
     (acc, v) => ({ ...acc, [v.name]: false }),
     {}
   );
-  const [defSettings, setDefSettings] = useState(getSettings());
+  const defSettings = getSettings();
   const defShowChartDescr = defSettings[SETTINGS_KEYS.SHOW_CHART_DESCR];
   const [disableChartDescr, setDisableChartDescr] = useState(
     !defShowChartDescr

@@ -92,6 +92,14 @@ export const REQUIRED_ENTRY_INPUT_FIELDS = [
     type: "radio",
     defaultValue: "None",
   },
+  {
+    fieldType: "Text",
+    label: "Note",
+    name: "Note",
+    icon: "📝",
+    type: "text",
+    placeholder: "Enter a note...",
+  },
 ];
 
 export const OPTIONAL_ENTRY_INPUT_FIELDS = [
@@ -151,14 +159,6 @@ export const OPTIONAL_ENTRY_INPUT_FIELDS = [
     icon: "✈️",
     type: "switch",
     defaultChecked: false,
-  },
-  {
-    fieldType: "Text",
-    label: "Note",
-    name: "Note",
-    icon: "📝",
-    type: "text",
-    placeholder: "Enter a note...",
   },
 ];
 
