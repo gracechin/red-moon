@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { StartNewCycleModal } from "../components/Modal.js";
 import { Link } from "react-router-dom";
+import logo from "../assets/red_moon_logo.svg";
 
 function NavBar({ onReset, onAdd, onExport, onImport, refreshData }) {
   const [showNewCycleModal, setShowNewCycleModal] = useState(false);
@@ -9,7 +10,9 @@ function NavBar({ onReset, onAdd, onExport, onImport, refreshData }) {
   return (
     <>
       <Navbar>
-        <Navbar.Brand href="/">Red Moon 🌕</Navbar.Brand>
+        <Navbar.Brand href="/">
+          Red Moon <img src={logo} alt="Red Moon Logo" />
+        </Navbar.Brand>
         <Nav>
           {onReset && onExport && onImport && (
             <NavDropdown title="..." id="collasible-nav-dropdown">
