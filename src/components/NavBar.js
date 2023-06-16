@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { StartNewCycleModal } from "../components/Modal.js";
 import { Link } from "react-router-dom";
 
-function NavBar({ onReset, onAdd, onExport, onImport, onEdit }) {
+function NavBar({ onReset, onAdd, onExport, onImport, refreshData }) {
+  const [showNewCycleModal, setShowNewCycleModal] = useState(false);
+
   return (
     <>
       <Navbar>
         <Navbar.Brand href="/">Red Moon 🌕</Navbar.Brand>
         <Nav>
-          {onReset && onExport && onImport && onEdit && (
-            <NavDropdown title="More..." id="collasible-nav-dropdown">
-              <NavDropdown.Item onClick={onEdit}>
-                📝 Interpret chart
+          {onReset && onExport && onImport && (
+            <NavDropdown title="..." id="collasible-nav-dropdown">
+              <NavDropdown.Item onClick={() => setShowNewCycleModal(true)}>
+                ✨ Start New Cycle
               </NavDropdown.Item>
               <NavDropdown.Item onClick={onExport}>📤 Export</NavDropdown.Item>
               <NavDropdown.Item onClick={onImport}>📥 Import</NavDropdown.Item>
@@ -27,6 +30,11 @@ function NavBar({ onReset, onAdd, onExport, onImport, onEdit }) {
           </div>
         </Nav>
       </Navbar>
+      <StartNewCycleModal
+        show={showNewCycleModal}
+        onClose={() => setShowNewCycleModal(false)}
+        onSubmit={refreshData}
+      />
     </>
   );
 }

@@ -60,7 +60,7 @@ function SettingsPage() {
       <Container className="settings">
         <h1>Settings</h1>
         <Form method="post" onSubmit={handleSubmit}>
-          <h4>✏️ Annotations</h4>
+          <h4>📝 Annotations</h4>
           <FieldRow name="Coverline">
             <Form.Control
               name={COVERLINE_TEMP_KEY}

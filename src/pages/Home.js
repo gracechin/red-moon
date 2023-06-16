@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  clearStoredEntries,
+  deleteStoredEntries,
   getAllEntries,
   getSettings,
   getStoredEntries,
@@ -11,7 +11,6 @@ import {
   ConfirmModal,
   ExportModal,
   ImportModal,
-  InterpretModal,
 } from "../components/Modal.js";
 import { PeriodChart } from "../components/PeriodChart";
 import NavBar from "../components/NavBar";
@@ -29,7 +28,6 @@ function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
-  const [showInterpretModal, setShowInterpretModal] = useState(false);
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState(-1);
   const [allEntries, setAllEntries] = useState(getAllEntries());
@@ -56,7 +54,7 @@ function HomePage() {
     setAllEntries(getAllEntries());
   };
   const onClearAllData = () => {
-    clearStoredEntries();
+    deleteStoredEntries();
     refreshData();
   };
 
@@ -70,7 +68,7 @@ function HomePage() {
         }}
         onExport={() => setShowExportModal(true)}
         onImport={() => setShowImportModal(true)}
-        onEdit={() => setShowInterpretModal(true)}
+        refreshData={refreshData}
       />
       <PeriodChart
         entries={entries}
@@ -98,10 +96,10 @@ function HomePage() {
       />
       <ConfirmModal
         show={showClearConfirmModal}
-        heading="🗑️ Clear all data?"
+        heading="🗑️ Clear Chart Data?"
         onClose={() => setShowClearConfirmModal(false)}
         onSubmit={onClearAllData}
-        bodyText="Cleared data cannot be recovered."
+        bodyText="Cleared entries cannot be recovered."
         submitButtonText="Clear all"
       />
       <ExportModal
@@ -113,13 +111,6 @@ function HomePage() {
         show={showImportModal}
         onClose={() => setShowImportModal(false)}
         onSubmit={refreshData}
-      />
-      <InterpretModal
-        show={showInterpretModal}
-        onClose={() => setShowInterpretModal(false)}
-        onSubmit={refreshData}
-        dateConfig={dateConfig}
-        defaultData={settings}
       />
     </div>
   );

@@ -54,14 +54,17 @@ export const saveSettings = (settings) => {
 
 // Entries
 
-const genDefaultEntries = () => {
-  const settings = getSettings();
-  const numEntries = settings[CHART_NUM_OF_CYCLE_DAYS_KEY];
-  const startDate = settings[CHART_START_DATE_KEY];
-  return range(0, numEntries).map((i) => ({
+const genDefaultEntries = (startDate, num) =>
+  range(0, num).map((i) => ({
     Date: newDateStrByDiff(startDate, i),
     Situation: "None",
   }));
+
+const genDefaultEntriesFromSettings = () => {
+  const settings = getSettings();
+  const numEntries = settings[CHART_NUM_OF_CYCLE_DAYS_KEY];
+  const startDate = settings[CHART_START_DATE_KEY];
+  return genDefaultEntries(startDate, numEntries);
 };
 
 export const getStoredEntries = () => {
@@ -69,7 +72,7 @@ export const getStoredEntries = () => {
 };
 
 export const getAllEntries = () => {
-  return genDefaultEntries().map((defEntry) => {
+  return genDefaultEntriesFromSettings().map((defEntry) => {
     const entries = getStoredEntries();
     const matchedEntries = entries.filter((e) => e.Date == defEntry.Date);
     if (matchedEntries.length == 0) return defEntry;
@@ -98,4 +101,4 @@ export const storeEntry = (entry) => {
   storeEntries(entries);
 };
 
-export const clearStoredEntries = () => delete localStorage[DATA_ENTRIES_KEY];
+export const deleteStoredEntries = () => delete localStorage[DATA_ENTRIES_KEY];
