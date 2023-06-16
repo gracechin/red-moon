@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Col, Row, Button, Form, Modal } from "react-bootstrap";
 import { storeEntry, addEntries, saveSettings } from "../utils/dataStorage";
-import { COVERLINE_TEMP_KEY, LUTEAL_START_DATE_KEY } from "../utils/constants";
+import {
+  COVERLINE_TEMP_KEY,
+  LUTEAL_START_DATE_KEY,
+  START_TEMP_RISE_FIELD,
+} from "../utils/constants";
 import {
   getCurrentDateStr,
   transformDateStrToDateLabel,
@@ -151,14 +155,24 @@ export function PeriodEntryModal({
   const defDate = defaultData.Date;
 
   const fieldsConfig = inputFieldsConfig.map((f) =>
-    defaultData[f.name] ? { ...f, defaultValue: defaultData[f.name] } : f
+    defaultData[f.name]
+      ? {
+          ...f,
+          defaultValue: defaultData[f.name],
+          defaultChecked: defaultData[f.name],
+        }
+      : f
   );
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    storeEntry({ ...defaultData, ...formJson });
+    storeEntry({
+      ...defaultData,
+      [START_TEMP_RISE_FIELD.name]: false,
+      ...formJson,
+    });
     onHide();
     onSubmit && onSubmit();
   }
@@ -207,6 +221,10 @@ export function PeriodEntryModal({
             </Col>
           </Row>
         </Form.Group>
+        <FormInput
+          {...START_TEMP_RISE_FIELD}
+          defaultChecked={defaultData[START_TEMP_RISE_FIELD.name] == "on"}
+        />
         {fieldsConfig.map((f) => (
           <FormInput {...f} />
         ))}

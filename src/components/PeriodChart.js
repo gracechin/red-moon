@@ -1,7 +1,11 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { ALL_ENTRY_INPUT_FIELDS } from "../utils/constants";
+import {
+  ALL_ENTRY_INPUT_FIELDS,
+  START_TEMP_RISE_FIELD,
+  LUTEAL_PHASE_DATA_BASE,
+} from "../utils/constants";
 import { transformDateStrToDateLabel } from "../utils/dateTime";
 
 function SynchronisedGraph({
@@ -272,20 +276,27 @@ const getMatchedFieldByName = (name) => {
   return matchedFields[0];
 };
 
-const genEmptyCellData = (field) => [
-  { ...field, value: "-", iconClassname: "icon" },
-];
+const genEmptyCell = (field) => ({
+  ...field,
+  value: "-",
+  iconClassname: "icon",
+});
 
 const getOptionCellData = (field, value) => {
   const matchedOptions = field.options.filter((opt) => opt.name === value);
   if (matchedOptions.length == 0) throw `Cannot find option - ${value}`;
   const option = matchedOptions[0];
-  return option.value || [{ ...option, value: option.icon }];
+  return [
+    ...(option.value || []),
+    option.icon === "-"
+      ? genEmptyCell(field)
+      : { name: field.name, icon: field.icon, value: option.icon },
+  ];
 };
 
 const getSwitchCellData = (field, value) => {
   if (value === "on") return [{ ...field, value: field.icon }];
-  return genEmptyCellData(field);
+  return [genEmptyCell(field)];
 };
 
 const getDateCellData = (dateStr) => {
@@ -299,22 +310,30 @@ const getDateCellData = (dateStr) => {
 };
 
 const getCellDataForField = (field, value) => {
-  if (!value) return genEmptyCellData(field);
+  if (!value) return [genEmptyCell(field)];
   const f = getMatchedFieldByName(field.name);
   if (f.options) return getOptionCellData(f, value);
   if (f.fieldType === "Switch") return getSwitchCellData(f, value);
-  return genEmptyCellData(field);
+  return [genEmptyCell(field)];
 };
 
-const transformEntryToCellData = (entry, idx, fieldsConfig) => {
-  const { Temperature, Date, Time } = entry;
+const transformEntryToCellData = (e, idx, fieldsConfig, noTempRise) => {
+  const { Temperature, Date, Time } = e;
+  const lutealPhaseDay = e[LUTEAL_PHASE_DATA_BASE.name];
   return {
     table1: [
       { name: "Cycle  Day", icon: "📅", value: `${idx + 1}` },
       ...getDateCellData(Date),
-      ...(Time
-        ? [{ ...TIME_CELL_DATA_BASE, value: Time }]
-        : genEmptyCellData(TIME_CELL_DATA_BASE)),
+      Time
+        ? { ...TIME_CELL_DATA_BASE, value: Time }
+        : genEmptyCell(TIME_CELL_DATA_BASE),
+      ...(noTempRise
+        ? []
+        : [
+            lutealPhaseDay
+              ? { ...LUTEAL_PHASE_DATA_BASE, value: lutealPhaseDay }
+              : genEmptyCell(LUTEAL_PHASE_DATA_BASE),
+          ]),
     ],
     graph: {
       x: idx,
@@ -322,12 +341,28 @@ const transformEntryToCellData = (entry, idx, fieldsConfig) => {
       missingData: !Temperature,
     },
     table2: [
-      ...(Temperature
-        ? [{ ...TEMP_CELL_DATA_BASE, value: Temperature }]
-        : genEmptyCellData(TEMP_CELL_DATA_BASE)),
-      ...fieldsConfig.map((f) => getCellDataForField(f, entry[f.name])).flat(),
+      Temperature
+        ? { ...TEMP_CELL_DATA_BASE, value: Temperature }
+        : genEmptyCell(TEMP_CELL_DATA_BASE),
+      ...fieldsConfig.map((f) => getCellDataForField(f, e[f.name])).flat(),
     ],
   };
+};
+
+const addLutealPhaseData = (entries) => {
+  var lutealPhaseStartIdx;
+  for (let i = 0; i < entries.length; i++) {
+    if (entries[i][START_TEMP_RISE_FIELD.name]) lutealPhaseStartIdx = i;
+    if (!lutealPhaseStartIdx) continue;
+    entries[i][LUTEAL_PHASE_DATA_BASE.name] = i - lutealPhaseStartIdx + 1;
+  }
+  return entries;
+};
+const transformEntriesToCellData = (entries, inputFieldsConfig) => {
+  const noTempRise = entries.every((e) => !e[START_TEMP_RISE_FIELD.name]);
+  return (noTempRise ? entries : addLutealPhaseData(entries)).map((e, idx) =>
+    transformEntryToCellData(e, idx, inputFieldsConfig, noTempRise)
+  );
 };
 
 const calcYDomain = (entries) => {
@@ -365,9 +400,7 @@ export function PeriodChart({
 
   useEffect(() => {
     const maxNumCols = Math.floor(chartSize.width / MIN_COL_WIDTH);
-    const data = entries.map((e, idx) =>
-      transformEntryToCellData(e, idx, inputFieldsConfig)
-    );
+    const data = transformEntriesToCellData(entries, inputFieldsConfig);
     const numColsVisible = Math.min(maxNumCols, data.length);
     setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
   }, [chartSize, startIndex]);

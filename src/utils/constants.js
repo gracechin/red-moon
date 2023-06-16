@@ -55,18 +55,31 @@ export const DAILY_SITUATION_OPTIONS = {
   },
   SPOTTING: {
     name: "Spotting",
-    icon: "🩸",
+    icon: "⭕",
     value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.SPOTTING],
   },
   PERIOD: {
     name: "Period",
-    icon: "🩸🩸",
+    icon: "🩸",
     value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.PERIOD],
   },
   NONE: {
     name: "None",
+    icon: "-",
     value: [EGG_WHITE_DATA.EMPTY, CREAMY_DATA.EMPTY, DRY_DATA.EMPTY],
   },
+};
+
+export const LUTEAL_PHASE_DATA_BASE = {
+  name: "Luteal Phase",
+  icon: "LP",
+};
+
+export const START_TEMP_RISE_FIELD = {
+  fieldType: "Switch",
+  label: "Temperature rise (luteal phase) starts today",
+  name: "startTempRise",
+  type: "switch",
 };
 
 export const REQUIRED_ENTRY_INPUT_FIELDS = [
@@ -74,6 +87,7 @@ export const REQUIRED_ENTRY_INPUT_FIELDS = [
     fieldType: "CheckOptions",
     label: "Daily Situation",
     name: "Situation",
+    icon: "🌸",
     options: Object.values(DAILY_SITUATION_OPTIONS),
     type: "radio",
     defaultValue: "None",
@@ -87,8 +101,8 @@ export const OPTIONAL_ENTRY_INPUT_FIELDS = [
     name: "Intercourse",
     icon: "💕",
     options: [
-      { name: "Condom", icon: "🍌" },
-      { name: "Raw", icon: "🍆" },
+      { name: "Protected", icon: "☔" },
+      { name: "Unprotected", icon: "🌧️" },
     ],
     type: "checkbox",
   },
@@ -122,6 +136,7 @@ export const OPTIONAL_ENTRY_INPUT_FIELDS = [
     name: "Flight",
     icon: "✈️",
     type: "switch",
+    defaultChecked: false,
   },
 ];
 
