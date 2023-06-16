@@ -2,17 +2,20 @@ import React from "react";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-function NavBar({ onReset, onAdd, onExport, onImport }) {
+function NavBar({ onReset, onAdd, onExport, onImport, onEdit }) {
   return (
     <>
       <Navbar>
         <Navbar.Brand href="/">Red Moon 🌕</Navbar.Brand>
         <Nav>
-          {onReset && onExport && onImport && (
+          {onReset && onExport && onImport && onEdit && (
             <NavDropdown title="More..." id="collasible-nav-dropdown">
-              <NavDropdown.Item onClick={onReset}>🗑️ Clear</NavDropdown.Item>
+              <NavDropdown.Item onClick={onEdit}>
+                📝 Interpret chart
+              </NavDropdown.Item>
               <NavDropdown.Item onClick={onExport}>📤 Export</NavDropdown.Item>
               <NavDropdown.Item onClick={onImport}>📥 Import</NavDropdown.Item>
+              <NavDropdown.Item onClick={onReset}>🗑️ Clear</NavDropdown.Item>
             </NavDropdown>
           )}
           {!!onAdd && <Nav.Link onClick={onAdd}>+ Entry</Nav.Link>}

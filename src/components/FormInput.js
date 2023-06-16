@@ -82,3 +82,30 @@ export const FormInput = (props) => {
       throw "FormInput 'fieldType' undefined";
   }
 };
+
+export const FloatInput = ({ name, label, placeholder, defaultValue }) => {
+  return (
+    <LabelledInputGroup name={name} label={label}>
+      <Form.Control
+        name={name}
+        type="float"
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+      />
+    </LabelledInputGroup>
+  );
+};
+
+export const DateInput = ({ name, label, max, min, defaultValue }) => {
+  return (
+    <LabelledInputGroup name={name} label={label}>
+      <Form.Control
+        name={name}
+        type="date"
+        max={max}
+        min={min}
+        defaultValue={defaultValue}
+      />
+    </LabelledInputGroup>
+  );
+};

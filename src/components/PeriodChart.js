@@ -319,7 +319,7 @@ const calcYDomain = (entries) => {
   if (entries.length === 0) return [360, 380];
   const yValues = entries
     .filter((e) => !!e.Temperature)
-    .map((e) => parseInt(e.Temperature) * 10);
+    .map((e) => parseFloat(e.Temperature) * 10);
   const max = Math.max.apply(null, yValues);
   const min = Math.min.apply(null, yValues);
   const calcMin = min - 2;
@@ -328,7 +328,7 @@ const calcYDomain = (entries) => {
 };
 
 export function PeriodChart({ entries, onClickColumn, inputFieldsConfig }) {
-  const MIN_COL_WIDTH = 27;
+  const MIN_COL_WIDTH = 28;
   const fontSize = "small";
   const TABLE_HEADING_WIDTH = 100;
   const chartWrapperRef = useRef();

@@ -130,6 +130,8 @@ export const ALL_ENTRY_INPUT_FIELDS = [
   ...OPTIONAL_ENTRY_INPUT_FIELDS,
 ];
 
+export const COVERLINE_TEMP_KEY = "Coverline temp";
+export const LUTEAL_START_DATE_KEY = "Luteal start date";
 export const CHART_START_DATE_KEY = "Chart start date";
 export const DEF_TEMP_TAKEN_TIME_KEY = "Default time taken key";
 export const CHART_NUM_OF_CYCLE_DAYS_KEY = "Chart # of cycle days";

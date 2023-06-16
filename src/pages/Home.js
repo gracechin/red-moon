@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Button } from "react-bootstrap";
 import {
   clearStoredEntries,
   getAllEntries,
@@ -12,6 +11,7 @@ import {
   ConfirmModal,
   ExportModal,
   ImportModal,
+  InterpretModal,
 } from "../components/Modal.js";
 import { PeriodChart } from "../components/PeriodChart";
 import NavBar from "../components/NavBar";
@@ -28,6 +28,7 @@ function HomePage() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showInterpretModal, setShowInterpretModal] = useState(false);
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState(-1);
   const [allEntries, setAllEntries] = useState(getAllEntries());
@@ -42,6 +43,10 @@ function HomePage() {
     chartStartDate,
     settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
   );
+  const dateConfig = {
+    minDate: chartStartDate,
+    maxDate: chartEndDate,
+  };
   const entries = allEntries.filter((e) => {
     const d = new Date(e.Date);
     return new Date(chartEndDate) > d && new Date(chartStartDate) <= d;
@@ -49,7 +54,6 @@ function HomePage() {
   const refreshData = () => {
     setAllEntries(getAllEntries());
   };
-  const onCloseEntryModal = () => setShowEntryModal(false);
   const onClearAllData = () => {
     clearStoredEntries();
     refreshData();
@@ -65,6 +69,7 @@ function HomePage() {
         }}
         onExport={() => setShowExportModal(true)}
         onImport={() => setShowImportModal(true)}
+        onEdit={() => setShowInterpretModal(true)}
       />
       <PeriodChart
         entries={entries}
@@ -77,24 +82,21 @@ function HomePage() {
       <PeriodEntryModal
         show={showEntryModal}
         inputFieldsConfig={inputFieldsConfig}
-        onHide={onCloseEntryModal}
+        onHide={() => setShowEntryModal(false)}
         onSubmit={refreshData}
         defaultData={
           selectedColumn > -1 && entries.length > 0
             ? { ...defDataBase, ...entries[selectedColumn] }
             : defDataBase
         }
-        dateConfig={{
-          minDate: chartStartDate,
-          maxDate: chartEndDate,
-        }}
+        dateConfig={dateConfig}
         mode={
           selectedColumn > -1 ? PERIOD_ENTRY_MODE.EDIT : PERIOD_ENTRY_MODE.NEW
         }
       />
       <ConfirmModal
         show={showClearConfirmModal}
-        heading="Clear all data?"
+        heading="🗑️ Clear all data?"
         onClose={() => setShowClearConfirmModal(false)}
         onSubmit={onClearAllData}
         bodyText="Cleared data cannot be recovered."
@@ -109,6 +111,13 @@ function HomePage() {
         show={showImportModal}
         onClose={() => setShowImportModal(false)}
         onSubmit={refreshData}
+      />
+      <InterpretModal
+        show={showInterpretModal}
+        onClose={() => setShowInterpretModal(false)}
+        onSubmit={refreshData}
+        dateConfig={dateConfig}
+        defaultData={settings}
       />
     </div>
   );

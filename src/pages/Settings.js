@@ -69,7 +69,7 @@ function SettingsPage() {
               defaultValue={defSettings[DEF_TEMP_TAKEN_TIME_KEY]}
             />
           </FieldRow>
-          <FieldRow name="Other information to track">
+          <FieldRow name="Other items to track">
             {OPTIONAL_ENTRY_INPUT_FIELDS.map((f) => (
               <SwitchInput
                 label={`${f.name} ${f.icon}`}

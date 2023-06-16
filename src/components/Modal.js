@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Col, Row, Button, Form, Modal } from "react-bootstrap";
-import { storeEntry, addEntries } from "../utils/dataStorage";
+import { storeEntry, addEntries, saveSettings } from "../utils/dataStorage";
+import { COVERLINE_TEMP_KEY, LUTEAL_START_DATE_KEY } from "../utils/constants";
 import {
   getCurrentDateStr,
   transformDateStrToDateLabel,
 } from "../utils/dateTime";
-import { FormInput } from "./FormInput";
+import { FormInput, FloatInput, DateInput } from "./FormInput";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (
@@ -58,7 +59,7 @@ export function ImportModal({ show, onClose, onSubmit }) {
   };
   return (
     <SimpleModal
-      heading="Import entries"
+      heading="📥 Import entries"
       show={show}
       onHide={() => {
         onClose();
@@ -86,7 +87,7 @@ export function ExportModal({ show, data, onClose }) {
   const dataStr = JSON.stringify(data);
   const copyToClipboard = () => navigator.clipboard.writeText(dataStr);
   return (
-    <SimpleModal heading="Export entries" show={show} onHide={onClose}>
+    <SimpleModal heading="📤 Export entries" show={show} onHide={onClose}>
       <div className="code-snippet-scroll-container">
         <code>{dataStr}</code>
       </div>
@@ -175,16 +176,14 @@ export function PeriodEntryModal({
     >
       <Form method="post" onSubmit={handleSubmit}>
         {isAddNewMode && (
-          <Form.Group className="mb-3" controlId="formDate">
-            <Form.Label>Date</Form.Label>
-            <Form.Control
-              name="Date"
-              type="date"
-              max={dateConfig.maxDate}
-              min={dateConfig.minDate}
-              defaultValue={(!isAddNewMode && defDate) || getCurrentDateStr()}
-            />
-          </Form.Group>
+          <DateInput
+            label="Date"
+            name="Date"
+            type="date"
+            max={dateConfig.maxDate}
+            min={dateConfig.minDate}
+            defaultValue={(!isAddNewMode && defDate) || getCurrentDateStr()}
+          />
         )}
         <Form.Group className="mb-3" controlId="formTemp">
           <Form.Label>Basal Temperature</Form.Label>
@@ -211,6 +210,54 @@ export function PeriodEntryModal({
         {fieldsConfig.map((f) => (
           <FormInput {...f} />
         ))}
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+      </Form>
+    </SimpleModal>
+  );
+}
+
+export function InterpretModal({
+  show,
+  onClose,
+  dateConfig,
+  onSubmit,
+  defaultData,
+}) {
+  function handleSubmit(e) {
+    e.preventDefault(); // Prevent the browser from reloading the page
+    const form = e.target;
+    const formData = new FormData(form);
+    const formJson = Object.fromEntries(formData.entries());
+    saveSettings(formJson);
+    console.log(formJson);
+    onClose();
+    onSubmit && onSubmit();
+  }
+
+  return (
+    <SimpleModal
+      size="md"
+      heading="📝 Interpret chart"
+      show={show}
+      onHide={onClose}
+    >
+      <Form method="post" onSubmit={handleSubmit}>
+        <FloatInput
+          label={COVERLINE_TEMP_KEY}
+          name="Coverline"
+          placeholder="Temp in °C"
+          defaultValue={defaultData[LUTEAL_START_DATE_KEY]}
+        />
+        <DateInput
+          label="Luteal (post ovulatory) phase start date"
+          name={LUTEAL_START_DATE_KEY}
+          type="date"
+          max={dateConfig.maxDate}
+          min={dateConfig.minDate}
+          defaultValue={defaultData[LUTEAL_START_DATE_KEY]}
+        />
         <Button variant="primary" type="submit">
           Save
         </Button>
