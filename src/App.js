@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, HashRouter } from "react-router-dom";
 import Layout from "./pages/Layout.js";
 import Home from "./pages/Home.js";
 import Settings from "./pages/Settings.js";
@@ -12,7 +12,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -21,7 +21,7 @@ function App() {
           <Route path="terms" element={<Terms />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
