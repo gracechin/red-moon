@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { SwitchInput } from "../components/FormInput";
 import { Col, Row, Container, Form, Button } from "react-bootstrap";
-import { saveSettings, getSettings } from "../utils/dataStorage";
+import { saveSettings, getSettings, getAllEntries } from "../utils/dataStorage";
 import {
   CHART_START_DATE_KEY,
   CHART_NUM_OF_CYCLE_DAYS_KEY,
   DEF_TEMP_TAKEN_TIME_KEY,
   OPTIONAL_ENTRY_INPUT_FIELDS,
+  COVERLINE_TEMP_KEY,
 } from "../utils/constants";
 
 const FieldRow = ({ children, name }) => {
@@ -25,6 +26,17 @@ const FieldRow = ({ children, name }) => {
   );
 };
 
+const calcTempRange = () => {
+  const allEntries = getAllEntries();
+  const tempValues = allEntries
+    .filter((e) => !!e.Temperature)
+    .map((e) => e.Temperature);
+  return {
+    max: Math.max.apply(null, tempValues),
+    min: Math.min.apply(null, tempValues),
+  };
+};
+
 function SettingsPage() {
   const navigate = useNavigate();
   const defOptionalFieldSettings = OPTIONAL_ENTRY_INPUT_FIELDS.reduce(
@@ -32,6 +44,7 @@ function SettingsPage() {
     {}
   );
   const [defSettings, setDefSettings] = useState(getSettings());
+  const tempRange = calcTempRange();
 
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
@@ -47,6 +60,19 @@ function SettingsPage() {
       <Container className="settings">
         <h1>Settings</h1>
         <Form method="post" onSubmit={handleSubmit}>
+          <h4>✏️ Annotations</h4>
+          <FieldRow name="Coverline">
+            <Form.Control
+              name={COVERLINE_TEMP_KEY}
+              label={COVERLINE_TEMP_KEY}
+              type="number"
+              placeholder="Temp in °C"
+              max={tempRange.max}
+              min={tempRange.min}
+              defaultValue={defSettings[COVERLINE_TEMP_KEY]}
+            />
+          </FieldRow>
+          <h4>📏 Chart length</h4>
           <FieldRow name="Cycle start date">
             <Form.Control
               name={CHART_START_DATE_KEY}
@@ -62,6 +88,7 @@ function SettingsPage() {
               defaultValue={defSettings[CHART_NUM_OF_CYCLE_DAYS_KEY]}
             />
           </FieldRow>
+          <h4>🗒️ Tracking</h4>
           <FieldRow name="Default temp taken time">
             <Form.Control
               name={DEF_TEMP_TAKEN_TIME_KEY}

@@ -21,6 +21,7 @@ import {
   DEF_TEMP_TAKEN_TIME_KEY,
   REQUIRED_ENTRY_INPUT_FIELDS,
   OPTIONAL_ENTRY_INPUT_FIELDS,
+  COVERLINE_TEMP_KEY,
 } from "../utils/constants";
 import { newDateStrByDiff } from "../utils/dateTime";
 
@@ -77,6 +78,7 @@ function HomePage() {
           setSelectedColumn(colIdx);
           setShowEntryModal(true);
         }}
+        coverline={settings[COVERLINE_TEMP_KEY]}
         inputFieldsConfig={inputFieldsConfig}
       />
       <PeriodEntryModal

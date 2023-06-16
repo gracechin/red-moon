@@ -10,6 +10,7 @@ import {
   SETTINGS_KEY,
   CHART_START_DATE_KEY,
   CHART_NUM_OF_CYCLE_DAYS_KEY,
+  COVERLINE_TEMP_KEY,
 } from "../utils/constants";
 
 // Utils
@@ -33,11 +34,13 @@ const initialiseSettings = () => {
   return defSettings;
 };
 
+const FLOAT_SETTING_KEYS = [CHART_NUM_OF_CYCLE_DAYS_KEY, COVERLINE_TEMP_KEY];
+
 export const getSettings = () => {
   var settings = getStored(SETTINGS_KEY);
   if (!settings) settings = initialiseSettings();
-  settings[CHART_NUM_OF_CYCLE_DAYS_KEY] = parseInt(
-    settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
+  FLOAT_SETTING_KEYS.forEach(
+    (k) => (settings[k] = settings[k] && parseFloat(settings[k]))
   );
   return settings;
 };

@@ -12,6 +12,7 @@ function SynchronisedGraph({
   yDomain,
   showXGridlines,
   showYGridlines,
+  horizontalLines,
 }) {
   const svgRef = useRef();
   useEffect(() => {
@@ -21,6 +22,8 @@ function SynchronisedGraph({
     }
   }, [width, height, data]);
 
+  const usedXDomain = xDomian || d3.extent(data, (d) => d.x);
+
   const drawGraph = () => {
     const svg = d3.select(svgRef.current);
     const numCols = data.length;
@@ -29,7 +32,7 @@ function SynchronisedGraph({
     const halfColWidth = colWidth * 0.5;
     const scaleX = d3
       .scaleLinear()
-      .domain(xDomian || d3.extent(data, (d) => d.x))
+      .domain(usedXDomain)
       .range([halfColWidth, chartWidth - halfColWidth]);
     const scaleY = d3
       .scaleLinear()
@@ -73,6 +76,18 @@ function SynchronisedGraph({
       .datum(filteredData)
       .attr("d", line)
       .attr("class", "graph-line");
+
+    // Draw horizontalLines
+    horizontalLines.forEach(({ y }) => {
+      svg
+        .append("path")
+        .datum([
+          { x: usedXDomain[0] - 1, y },
+          { x: usedXDomain[1] + 1, y },
+        ])
+        .attr("d", line)
+        .attr("class", "graph-line");
+    });
   };
 
   return (
@@ -327,7 +342,12 @@ const calcYDomain = (entries) => {
   return [calcMin, calcMax < max ? max + 2 : calcMax];
 };
 
-export function PeriodChart({ entries, onClickColumn, inputFieldsConfig }) {
+export function PeriodChart({
+  entries,
+  onClickColumn,
+  inputFieldsConfig,
+  coverline,
+}) {
   const MIN_COL_WIDTH = 28;
   const fontSize = "small";
   const TABLE_HEADING_WIDTH = 100;
@@ -415,6 +435,7 @@ export function PeriodChart({ entries, onClickColumn, inputFieldsConfig }) {
             data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             yDomain={yDomain}
             showYGridlines={true}
+            horizontalLines={coverline ? [{ y: coverline * 10 }] : []}
           />
           <ChartOverlay
             yDomain={yDomain}
