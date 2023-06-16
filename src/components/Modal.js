@@ -64,15 +64,12 @@ export function ImportModal({ show, onClose, onSubmit }) {
     onSubmit();
     onClose();
   };
+  const onHide = () => {
+    onClose();
+    setErrorMsg("");
+  };
   return (
-    <SimpleModal
-      heading="📥 Import entries"
-      show={show}
-      onHide={() => {
-        onClose();
-        setErrorMsg("");
-      }}
-    >
+    <SimpleModal heading="📥 Import" show={show} onHide={onHide}>
       <Form.Control
         as="textarea"
         className={isError && "error"}
@@ -94,7 +91,9 @@ export function ExportModal({ show, data, onClose }) {
   const dataStr = JSON.stringify(data);
   const copyToClipboard = () => navigator.clipboard.writeText(dataStr);
   return (
-    <SimpleModal heading="📤 Export entries" show={show} onHide={onClose}>
+    <SimpleModal heading="📤 Export" show={show} onHide={onClose}>
+      <div className="tip-box">💡 Take a screenshot to save as an image.</div>
+      Data entries in JSON format:
       <div className="code-snippet-scroll-container">
         <code>{dataStr}</code>
       </div>
