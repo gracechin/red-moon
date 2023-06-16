@@ -243,7 +243,7 @@ export function StartNewCycleModal({ show, onClose, onSubmit }) {
 
     const startDate = formJson[SETTINGS_KEYS.CHART_START_DATE];
     const entriesToKeep = getAllEntries().filter(
-      (e) => !dateComparison(e.Date, startDate) < 0
+      (e) => !(dateComparison(e.Date, startDate) < 0)
     );
     storeEntries(entriesToKeep);
 
