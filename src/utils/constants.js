@@ -145,14 +145,19 @@ export const ALL_ENTRY_INPUT_FIELDS = [
   ...OPTIONAL_ENTRY_INPUT_FIELDS,
 ];
 
-export const COVERLINE_TEMP_KEY = "Coverline temp";
-export const LUTEAL_START_DATE_KEY = "Luteal start date";
-export const CHART_START_DATE_KEY = "Chart start date";
-export const DEF_TEMP_TAKEN_TIME_KEY = "Default time taken key";
-export const CHART_NUM_OF_CYCLE_DAYS_KEY = "Chart # of cycle days";
+export const SETTINGS_KEYS = {
+  COVERLINE_TEMP: "Coverline temp",
+  LUTEAL_START_DATE: "Luteal start date",
+  CHART_START_DATE: "Chart start date",
+  DEF_TEMP_TAKEN_TIME: "Default time taken key",
+  CHART_NUM_OF_CYCLE_DAYS: "Chart # of cycle days",
+  SHOW_CHART_DESCR: "Show Chart Description",
+  CHART_DESCR: "Chart Description",
+};
+
 export const DATA_ENTRIES_KEY = "Entries";
 export const SETTINGS_KEY = "Settings";
 export const DEFAULT_SETTINGS = {
-  [CHART_NUM_OF_CYCLE_DAYS_KEY]: 40,
-  [DEF_TEMP_TAKEN_TIME_KEY]: "08:00",
+  [SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS]: 40,
+  [SETTINGS_KEYS.DEF_TEMP_TAKEN_TIME]: "08:00",
 };

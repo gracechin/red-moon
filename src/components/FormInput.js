@@ -56,7 +56,13 @@ export const OptionsInput = (props) => {
   return <ToggleButtons {...props} />;
 };
 
-export const SwitchInput = ({ label, name, compress, defaultChecked }) => {
+export const SwitchInput = ({
+  label,
+  name,
+  compress,
+  defaultChecked,
+  onChange,
+}) => {
   return (
     <>
       <Form.Check
@@ -64,6 +70,7 @@ export const SwitchInput = ({ label, name, compress, defaultChecked }) => {
         label={label}
         name={name}
         defaultChecked={defaultChecked}
+        onChange={onChange}
       />
       {!compress && <br />}
     </>

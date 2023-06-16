@@ -7,16 +7,13 @@ import {
   storeEntries,
   getAllEntries,
 } from "../utils/dataStorage";
-import {
-  START_TEMP_RISE_FIELD,
-  CHART_START_DATE_KEY,
-} from "../utils/constants";
+import { START_TEMP_RISE_FIELD, SETTINGS_KEYS } from "../utils/constants";
 import {
   getCurrentDateStr,
   transformDateStrToDateLabel,
   dateComparison,
 } from "../utils/dateTime";
-import { FormInput, FloatInput, DateInput } from "./FormInput";
+import { FormInput, DateInput } from "./FormInput";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (
@@ -250,7 +247,7 @@ export function StartNewCycleModal({ show, onClose, onSubmit }) {
     const formJson = Object.fromEntries(formData.entries());
     saveSettings(formJson);
 
-    const startDate = formJson[CHART_START_DATE_KEY];
+    const startDate = formJson[SETTINGS_KEYS.CHART_START_DATE];
     const entriesToKeep = getAllEntries().filter(
       (e) => !dateComparison(e.Date, startDate) < 0
     );
@@ -270,7 +267,7 @@ export function StartNewCycleModal({ show, onClose, onSubmit }) {
       <Form method="post" onSubmit={handleSubmit}>
         <DateInput
           label="First Day of Cycle"
-          name={CHART_START_DATE_KEY}
+          name={SETTINGS_KEYS.CHART_START_DATE}
           type="date"
           defaultValue={getCurrentDateStr()}
         />

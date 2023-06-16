@@ -382,6 +382,8 @@ export function PeriodChart({
   onClickColumn,
   inputFieldsConfig,
   coverline,
+  showDescription,
+  description,
 }) {
   const MIN_COL_WIDTH = 28;
   const fontSize = "small";
@@ -450,6 +452,7 @@ export function PeriodChart({
             ⇒
           </Button>
         </div>
+        {showDescription && <div>{description}</div>}
         <SynchronisedTable
           startIndex={startIndex}
           rowLabelKey="x"

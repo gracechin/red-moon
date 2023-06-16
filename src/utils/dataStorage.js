@@ -8,9 +8,7 @@ import {
   DEFAULT_SETTINGS,
   DATA_ENTRIES_KEY,
   SETTINGS_KEY,
-  CHART_START_DATE_KEY,
-  CHART_NUM_OF_CYCLE_DAYS_KEY,
-  COVERLINE_TEMP_KEY,
+  SETTINGS_KEYS,
 } from "../utils/constants";
 
 // Utils
@@ -24,7 +22,7 @@ export const store = (key, value) =>
 
 const getDefaultSettings = () => {
   const defaultSettings = DEFAULT_SETTINGS;
-  defaultSettings[CHART_START_DATE_KEY] = getCurrentDateStr();
+  defaultSettings[SETTINGS_KEYS.CHART_START_DATE] = getCurrentDateStr();
   return defaultSettings;
 };
 
@@ -34,7 +32,10 @@ const initialiseSettings = () => {
   return defSettings;
 };
 
-const FLOAT_SETTING_KEYS = [CHART_NUM_OF_CYCLE_DAYS_KEY, COVERLINE_TEMP_KEY];
+const FLOAT_SETTING_KEYS = [
+  SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS,
+  SETTINGS_KEYS.COVERLINE_TEMP,
+];
 
 export const getSettings = () => {
   var settings = getStored(SETTINGS_KEY);
@@ -62,8 +63,8 @@ const genDefaultEntries = (startDate, num) =>
 
 const genDefaultEntriesFromSettings = () => {
   const settings = getSettings();
-  const numEntries = settings[CHART_NUM_OF_CYCLE_DAYS_KEY];
-  const startDate = settings[CHART_START_DATE_KEY];
+  const numEntries = settings[SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS];
+  const startDate = settings[SETTINGS_KEYS.CHART_START_DATE];
   return genDefaultEntries(startDate, numEntries);
 };
 

@@ -15,12 +15,9 @@ import {
 import { PeriodChart } from "../components/PeriodChart";
 import NavBar from "../components/NavBar";
 import {
-  CHART_START_DATE_KEY,
-  CHART_NUM_OF_CYCLE_DAYS_KEY,
-  DEF_TEMP_TAKEN_TIME_KEY,
+  SETTINGS_KEYS,
   REQUIRED_ENTRY_INPUT_FIELDS,
   OPTIONAL_ENTRY_INPUT_FIELDS,
-  COVERLINE_TEMP_KEY,
 } from "../utils/constants";
 import { newDateStrByDiff } from "../utils/dateTime";
 
@@ -36,11 +33,11 @@ function HomePage() {
     ...REQUIRED_ENTRY_INPUT_FIELDS,
     ...OPTIONAL_ENTRY_INPUT_FIELDS.filter((f) => settings[f.name] == "on"),
   ];
-  const defDataBase = { Time: settings[DEF_TEMP_TAKEN_TIME_KEY] };
-  const chartStartDate = settings[CHART_START_DATE_KEY];
+  const defDataBase = { Time: settings[SETTINGS_KEYS.DEF_TEMP_TAKEN_TIME] };
+  const chartStartDate = settings[SETTINGS_KEYS.CHART_START_DATE];
   const chartEndDate = newDateStrByDiff(
     chartStartDate,
-    settings[CHART_NUM_OF_CYCLE_DAYS_KEY]
+    settings[SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS]
   );
   const dateConfig = {
     minDate: chartStartDate,
@@ -76,8 +73,10 @@ function HomePage() {
           setSelectedColumn(colIdx);
           setShowEntryModal(true);
         }}
-        coverline={settings[COVERLINE_TEMP_KEY]}
+        coverline={settings[SETTINGS_KEYS.COVERLINE_TEMP]}
         inputFieldsConfig={inputFieldsConfig}
+        showDescription={settings[SETTINGS_KEYS.SHOW_CHART_DESCR]}
+        description={settings[SETTINGS_KEYS.CHART_DESCR]}
       />
       <PeriodEntryModal
         show={showEntryModal}
@@ -96,10 +95,10 @@ function HomePage() {
       />
       <ConfirmModal
         show={showClearConfirmModal}
-        heading="🗑️ Clear Chart Data?"
+        heading="🗑️ Clear All Data?"
         onClose={() => setShowClearConfirmModal(false)}
         onSubmit={onClearAllData}
-        bodyText="Cleared entries cannot be recovered."
+        bodyText="Cleared data cannot be recovered."
         submitButtonText="Clear all"
       />
       <ExportModal

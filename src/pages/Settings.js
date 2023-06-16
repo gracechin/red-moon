@@ -4,13 +4,7 @@ import NavBar from "../components/NavBar";
 import { SwitchInput } from "../components/FormInput";
 import { Col, Row, Container, Form, Button } from "react-bootstrap";
 import { saveSettings, getSettings, getAllEntries } from "../utils/dataStorage";
-import {
-  CHART_START_DATE_KEY,
-  CHART_NUM_OF_CYCLE_DAYS_KEY,
-  DEF_TEMP_TAKEN_TIME_KEY,
-  OPTIONAL_ENTRY_INPUT_FIELDS,
-  COVERLINE_TEMP_KEY,
-} from "../utils/constants";
+import { SETTINGS_KEYS, OPTIONAL_ENTRY_INPUT_FIELDS } from "../utils/constants";
 
 const FieldRow = ({ children, name }) => {
   return (
@@ -44,14 +38,25 @@ function SettingsPage() {
     {}
   );
   const [defSettings, setDefSettings] = useState(getSettings());
+  const defShowChartDescr = defSettings[SETTINGS_KEYS.SHOW_CHART_DESCR];
+  const [disableChartDescr, setDisableChartDescr] = useState(
+    !defShowChartDescr
+  );
   const tempRange = calcTempRange();
+  const onChangeShowChartDescr = () => {
+    setDisableChartDescr(!disableChartDescr);
+  };
 
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    saveSettings({ ...defOptionalFieldSettings, ...formJson });
+    saveSettings({
+      ...defOptionalFieldSettings,
+      [SETTINGS_KEYS.SHOW_CHART_DESCR]: false,
+      ...formJson,
+    });
     navigate("/");
   }
   return (
@@ -63,37 +68,63 @@ function SettingsPage() {
           <h4>📝 Annotations</h4>
           <FieldRow name="Coverline">
             <Form.Control
-              name={COVERLINE_TEMP_KEY}
-              label={COVERLINE_TEMP_KEY}
+              name={SETTINGS_KEYS.COVERLINE_TEMP}
+              label={SETTINGS_KEYS.COVERLINE_TEMP}
               type="number"
               placeholder="Temp in °C"
               max={tempRange.max}
               min={tempRange.min}
-              defaultValue={defSettings[COVERLINE_TEMP_KEY]}
+              defaultValue={defSettings[SETTINGS_KEYS.COVERLINE_TEMP]}
             />
           </FieldRow>
+          <h4>🗒️ Chart Description</h4>
+          <SwitchInput
+            label="Show"
+            name={SETTINGS_KEYS.SHOW_CHART_DESCR}
+            onChange={onChangeShowChartDescr}
+            compress={true}
+            defaultChecked={defSettings[SETTINGS_KEYS.SHOW_CHART_DESCR] == "on"}
+          />
+          <Form.Control
+            name={SETTINGS_KEYS.CHART_DESCR}
+            as="textarea"
+            rows={2}
+            type="text"
+            placeholder="Enter chart description..."
+            disabled={disableChartDescr}
+            defaultValue={defSettings[SETTINGS_KEYS.CHART_DESCR]}
+          />
+          {/* TODO: Create template for chart description */}
+          {/* <Button
+            variant="secondary"
+            onClick={() => console.log("hello")}
+            disabled={disableChartDescr}
+          >
+            Use suggested template
+          </Button> */}
+          <br />
           <h4>📏 Chart length</h4>
           <FieldRow name="Cycle start date">
             <Form.Control
-              name={CHART_START_DATE_KEY}
+              name={SETTINGS_KEYS.CHART_START_DATE}
               type="date"
-              defaultValue={defSettings[CHART_START_DATE_KEY]}
+              defaultValue={defSettings[SETTINGS_KEYS.CHART_START_DATE]}
             />
           </FieldRow>
           <FieldRow name="Number of cycle days">
             <Form.Control
-              name={CHART_NUM_OF_CYCLE_DAYS_KEY}
+              name={SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS}
               type="number"
               min={1}
-              defaultValue={defSettings[CHART_NUM_OF_CYCLE_DAYS_KEY]}
+              defaultValue={defSettings[SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS]}
             />
           </FieldRow>
           <h4>🗒️ Tracking</h4>
           <FieldRow name="Default temp taken time">
             <Form.Control
-              name={DEF_TEMP_TAKEN_TIME_KEY}
+              name={SETTINGS_KEYS.DEF_TEMP_TAKEN_TIME}
               type="time"
-              defaultValue={defSettings[DEF_TEMP_TAKEN_TIME_KEY]}
+              defaultValue={defSettings[SETTINGS_KEYS.DEF_TEMP_TAKEN_TIME]}
             />
           </FieldRow>
           <FieldRow name="Other items to track">
