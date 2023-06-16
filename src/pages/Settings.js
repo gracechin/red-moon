@@ -119,7 +119,7 @@ function SettingsPage() {
               defaultValue={defSettings[SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS]}
             />
           </FieldRow>
-          <h4>🗒️ Tracking</h4>
+          <h4>📋 Tracking</h4>
           <FieldRow name="Default temp taken time">
             <Form.Control
               name={SETTINGS_KEYS.DEF_TEMP_TAKEN_TIME}

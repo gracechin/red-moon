@@ -161,3 +161,5 @@ export const DEFAULT_SETTINGS = {
   [SETTINGS_KEYS.CHART_NUM_OF_CYCLE_DAYS]: 40,
   [SETTINGS_KEYS.DEF_TEMP_TAKEN_TIME]: "08:00",
 };
+
+export const MY_WEB_ADDRESS = "https://gracechin.github.io";

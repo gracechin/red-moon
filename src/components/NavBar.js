@@ -21,12 +21,12 @@ function NavBar({ onReset, onAdd, onExport, onImport, refreshData }) {
               <NavDropdown.Item onClick={onReset}>🗑️ Clear</NavDropdown.Item>
             </NavDropdown>
           )}
-          {!!onAdd && <Nav.Link onClick={onAdd}>+ Entry</Nav.Link>}
+          {!!onAdd && <Nav.Link onClick={onAdd}>+ Add New Entry</Nav.Link>}
           <div className="nav-link">
             <Link to="/settings">⚙️</Link>
           </div>
           <div className="nav-link">
-            <Link to="/settings">ⓘ</Link>
+            <Link to="/about">ⓘ</Link>
           </div>
         </Nav>
       </Navbar>
