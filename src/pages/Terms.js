@@ -6,7 +6,7 @@ function TermsPage() {
   return (
     <div className="wrapper">
       <NavBar />
-      <Container>
+      <Container className="terms">
         <h1>Privacy, Terms, & Disclaimer</h1>
         <h3>Privacy Policy</h3>
         <p>
@@ -45,13 +45,13 @@ function TermsPage() {
           This app's provider cannot be held liable for any data loss.
         </p>
         <p>
-          By using this app, you hereby and forever indemnifies and holds
-          harmless this app's maker from and against any and all legal actions,
-          claims, demands, liabilities, damages, obligations, losses, costs or
-          expenses whatsoever in any way connected with or arising out of use of
-          this app. By using this app, you also acknowledge and agree that you
-          are solely responsible for any decisions or actions you take based on
-          the information provided by, or use of this app.
+          By using this app, you hereby and forever indemnify and hold harmless
+          this app's maker from and against any and all legal actions, claims,
+          demands, liabilities, damages, obligations, losses, costs or expenses
+          whatsoever in any way connected with or arising out of use of this
+          app. By using this app, you also acknowledge and agree that you are
+          solely responsible for any decisions or actions you take based on the
+          information provided by, or use of this app.
         </p>
       </Container>
     </div>
