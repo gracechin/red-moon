@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import { SwitchInput } from "../components/FormInput";
+import { SwitchInput, Text } from "../components/FormInput";
 import { Col, Row, Container, Form, Button } from "react-bootstrap";
 import { saveSettings, getSettings, getAllEntries } from "../utils/dataStorage";
 import { SETTINGS_KEYS, OPTIONAL_ENTRY_INPUT_FIELDS } from "../utils/constants";
@@ -85,11 +85,9 @@ function SettingsPage() {
             compress={true}
             defaultChecked={defSettings[SETTINGS_KEYS.SHOW_CHART_DESCR] == "on"}
           />
-          <Form.Control
+          <Text
             name={SETTINGS_KEYS.CHART_DESCR}
-            as="textarea"
             rows={2}
-            type="text"
             placeholder="Enter chart description..."
             disabled={disableChartDescr}
             defaultValue={defSettings[SETTINGS_KEYS.CHART_DESCR]}

@@ -152,6 +152,14 @@ export const OPTIONAL_ENTRY_INPUT_FIELDS = [
     type: "switch",
     defaultChecked: false,
   },
+  {
+    fieldType: "Text",
+    label: "Note",
+    name: "Note",
+    icon: "📝",
+    type: "text",
+    placeholder: "Enter a note...",
+  },
 ];
 
 export const ALL_ENTRY_INPUT_FIELDS = [

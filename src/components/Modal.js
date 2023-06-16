@@ -13,7 +13,7 @@ import {
   transformDateStrToDateLabel,
   dateComparison,
 } from "../utils/dateTime";
-import { FormInput, DateInput } from "./FormInput";
+import { FormInput, DateInput, Text } from "./FormInput";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (
@@ -51,7 +51,6 @@ const validateData = (data) => {
 export function ImportModal({ show, onClose, onSubmit }) {
   const [data, setData] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const isError = errorMsg.length > 0;
   const onChange = (e) => {
     setData(e.target.value);
     setErrorMsg("");
@@ -70,16 +69,12 @@ export function ImportModal({ show, onClose, onSubmit }) {
   };
   return (
     <SimpleModal heading="📥 Import" show={show} onHide={onHide}>
-      <Form.Control
-        as="textarea"
-        className={isError && "error"}
+      <Text
         rows={3}
-        type="text"
         onChange={onChange}
         placeholder="Enter data in JSON format [{...}]"
+        errorMsg={errorMsg}
       />
-      {isError > 0 && <div className="errorMsg">{errorMsg}</div>}
-      <br />
       <Button variant="primary" onClick={importData}>
         Import
       </Button>

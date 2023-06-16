@@ -299,6 +299,14 @@ const getSwitchCellData = (field, value) => {
   return [genEmptyCell(field)];
 };
 
+const getTextCellData = (field, value) => {
+  if (value && value.length > 0) {
+    const len = value.length;
+    return [{ ...field, value: len > 5 ? value.slice(0, 3) + ".." : value }];
+  }
+  return [genEmptyCell(field)];
+};
+
 const getDateCellData = (dateStr) => {
   const [_yyyy, _mm, dd] = dateStr.split("-");
   const dayIdx = new Date(dateStr).getDay();
@@ -314,6 +322,7 @@ const getCellDataForField = (field, value) => {
   const f = getMatchedFieldByName(field.name);
   if (f.options) return getOptionCellData(f, value);
   if (f.fieldType === "Switch") return getSwitchCellData(f, value);
+  if (f.fieldType === "Text") return getTextCellData(f, value);
   return [genEmptyCell(field)];
 };
 

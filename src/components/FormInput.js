@@ -77,6 +77,43 @@ export const SwitchInput = ({
   );
 };
 
+export const TextInput = (props) => {
+  return (
+    <LabelledInputGroup name={props.name} label={props.label}>
+      <Text {...props} />{" "}
+    </LabelledInputGroup>
+  );
+};
+
+export const Text = ({
+  errorMsg,
+  rows,
+  onChange,
+  placeholder,
+  name,
+  disabled,
+  defaultValue,
+}) => {
+  const isError = errorMsg && errorMsg.length > 0;
+  return (
+    <>
+      <Form.Control
+        name={name}
+        as="textarea"
+        className={isError && "error"}
+        rows={rows || 3}
+        type="text"
+        onChange={onChange || (() => {})}
+        placeholder={placeholder}
+        disabled={disabled}
+        defaultValue={defaultValue}
+      />
+      {isError > 0 && <div className="errorMsg">{errorMsg}</div>}
+      <br />
+    </>
+  );
+};
+
 export const FormInput = (props) => {
   switch (props.fieldType) {
     case "CheckOptions":
@@ -85,6 +122,8 @@ export const FormInput = (props) => {
       return <OptionsInput {...props} />;
     case "Switch":
       return <SwitchInput {...props} />;
+    case "Text":
+      return <TextInput {...props} />;
     default:
       throw "FormInput 'fieldType' undefined";
   }
