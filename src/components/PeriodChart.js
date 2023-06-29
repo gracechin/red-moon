@@ -415,7 +415,7 @@ export function PeriodChart({
     const data = transformEntriesToCellData(entries, inputFieldsConfig);
     const numColsVisible = Math.min(maxNumCols, data.length);
     setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
-  }, [chartWidth, startIndex]);
+  }, [chartWidth, entries, startIndex]);
 
   useEffect(() => onResizeHeight(), [visibleData]);
 
