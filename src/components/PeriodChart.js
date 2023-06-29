@@ -401,7 +401,8 @@ export function PeriodChart({
   const yDomain = calcYDomain(entries);
   const [startIndex, setStartIndex] = useState(0);
   const [visibleData, setVisibleData] = useState([]);
-  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
+  const [chartWidth, setChartWidth] = useState(0);
+  const [chartHeight, setChartHeight] = useState(0);
   const [activeColumn, setActiveColumn] = useState(-1);
 
   useEffect(() => {
@@ -410,19 +411,33 @@ export function PeriodChart({
   }, [entries]);
 
   useEffect(() => {
-    const maxNumCols = Math.floor(chartSize.width / MIN_COL_WIDTH);
+    const maxNumCols = Math.floor(chartWidth / MIN_COL_WIDTH);
     const data = transformEntriesToCellData(entries, inputFieldsConfig);
     const numColsVisible = Math.min(maxNumCols, data.length);
     setVisibleData(data.slice(startIndex, startIndex + numColsVisible));
-  }, [chartSize, startIndex]);
+  }, [chartWidth, startIndex]);
+
+  useEffect(() => onResizeHeight(), [visibleData]);
 
   const onChangeColumn = ({ activeColumn }) => setActiveColumn(activeColumn);
   const onNavigate = (direction) => setStartIndex(startIndex + direction);
 
   const onResize = () => {
+    onResizeWidth();
+    onResizeHeight();
+  };
+
+  const onResizeWidth = () => {
     if (!!chartWrapperRef.current) {
-      const { width, height } = chartWrapperRef.current.getBoundingClientRect();
-      setChartSize({ width, height });
+      const { width } = chartWrapperRef.current.getBoundingClientRect();
+      setChartWidth(width);
+    }
+  };
+
+  const onResizeHeight = () => {
+    if (!!chartWrapperRef.current) {
+      const { height } = chartWrapperRef.current.getBoundingClientRect();
+      setChartHeight(height);
     }
   };
 
@@ -465,7 +480,7 @@ export function PeriodChart({
           startIndex={startIndex}
           rowLabelKey="x"
           data={visibleData.map((d) => d.table1)}
-          width={chartSize.width}
+          width={chartWidth}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickColumn}
@@ -474,8 +489,8 @@ export function PeriodChart({
         />
         <div className="chart-container" ref={chartWrapperRef}>
           <SynchronisedGraph
-            width={chartSize.width}
-            height={chartSize.height}
+            width={chartWidth}
+            height={chartHeight}
             data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             yDomain={yDomain}
             showYGridlines={true}
@@ -484,8 +499,8 @@ export function PeriodChart({
           <ChartOverlay
             yDomain={yDomain}
             startIndex={startIndex}
-            width={chartSize.width}
-            height={chartSize.height}
+            width={chartWidth}
+            height={chartHeight}
             data={visibleData.filter((d) => d.graph).map((d) => d.graph)}
             activeColumn={activeColumn}
             onChangeColumn={onChangeColumn}
@@ -496,7 +511,7 @@ export function PeriodChart({
           startIndex={startIndex}
           rowLabelKey="x"
           data={visibleData.map((d) => d.table2)}
-          width={chartSize.width}
+          width={chartWidth}
           activeColumn={activeColumn}
           onChangeColumn={onChangeColumn}
           onClickColumn={onClickColumn}
