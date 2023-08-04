@@ -10,4 +10,6 @@ To use webpack to compile and locally serve at [localhost:8080](http://localhost
 npm run dev
 ```
 
-### Implementation Notes
+## To Deploy
+
+This project is deployed using Netlify.
