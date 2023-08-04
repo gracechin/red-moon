@@ -38,10 +38,10 @@ const ToggleButtons = ({ label, name, defaultValue, options, type }) => {
         defaultValue={defaultValue}
         className="mb-2"
       >
-        {options.map(({ name, icon }, idx) => {
+        {options.map(({ name: optionName, icon }, idx) => {
           return (
-            <ToggleButton id={name} value={name} key={idx}>
-              {[icon, name].join(" ")}
+            <ToggleButton id={name + optionName} value={optionName} key={idx}>
+              {[icon, optionName].join(" ")}
             </ToggleButton>
           );
         })}
