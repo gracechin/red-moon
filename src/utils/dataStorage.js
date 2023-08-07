@@ -4,11 +4,13 @@ import {
   getCurrentDateStr,
 } from "../utils/dateTime";
 import { range } from "../utils/utils";
+import { getFieldOptionValue } from "../components/FormInput.tsx";
 import {
   DEFAULT_SETTINGS,
   DATA_ENTRIES_KEY,
   SETTINGS_KEY,
   SETTINGS_KEYS,
+  REQUIRED_ENTRY_INPUT_FIELDS,
 } from "../utils/constants";
 
 // Utils
@@ -55,11 +57,19 @@ export const saveSettings = (settings) => {
 
 // Entries
 
-const genDefaultEntries = (startDate, num) =>
-  range(0, num).map((i) => ({
+const genDefaultEntries = (startDate, num) => {
+  let defEntriesBase = {};
+  REQUIRED_ENTRY_INPUT_FIELDS.forEach((f) => {
+    defEntriesBase[f.name] = f.options
+      ? getFieldOptionValue(f.name, f.defaultValue)
+      : f.defaultValue;
+  });
+
+  return range(0, num).map((i) => ({
     Date: newDateStrByDiff(startDate, i),
-    Situation: "None",
+    ...defEntriesBase,
   }));
+};
 
 const genDefaultEntriesFromSettings = () => {
   const settings = getSettings();

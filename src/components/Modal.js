@@ -13,7 +13,7 @@ import {
   transformDateStrToDateLabel,
   dateComparison,
 } from "../utils/dateTime";
-import { FormInput, DateInput, Text } from "./FormInput";
+import { FormInput, DateInput, Text } from "./FormInput.tsx";
 
 export function SimpleModal({ show, heading, children, footer, onHide, size }) {
   return (

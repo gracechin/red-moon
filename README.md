@@ -13,3 +13,7 @@ npm run dev
 ## To Deploy
 
 This project is deployed using Netlify.
+
+## Updates
+
+2023-08-07 Introduce TypeScript

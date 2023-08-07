@@ -10,6 +10,11 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.([cm]?ts|tsx)$/,
+        exclude: /node_modules/,
+        loader: "ts-loader",
+      },
+      {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {

@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
+import { getFieldOptionValue } from "../components/FormInput.tsx";
 import {
   ALL_ENTRY_INPUT_FIELDS,
   START_TEMP_RISE_FIELD,
@@ -283,7 +284,9 @@ const genEmptyCell = (field) => ({
 });
 
 const getOptionCellData = (field, value) => {
-  const matchedOptions = field.options.filter((opt) => opt.name === value);
+  const matchedOptions = field.options.filter(
+    (opt) => getFieldOptionValue(field.name, opt.name) === value
+  );
   if (matchedOptions.length == 0) throw `Cannot find option - ${value}`;
   const option = matchedOptions[0];
   return [
