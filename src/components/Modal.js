@@ -150,16 +150,8 @@ export function PeriodEntryModal({
 }) {
   const isAddNewMode = mode === PERIOD_ENTRY_MODE.NEW;
   const defDate = defaultData.Date;
+  const [temp, setTemp] = useState(defaultData.Temperature);
 
-  const fieldsConfig = inputFieldsConfig.map((f) =>
-    defaultData[f.name]
-      ? {
-          ...f,
-          defaultValue: defaultData[f.name],
-          defaultChecked: defaultData[f.name],
-        }
-      : f
-  );
   function handleSubmit(e) {
     e.preventDefault(); // Prevent the browser from reloading the page
     const form = e.target;
@@ -169,6 +161,7 @@ export function PeriodEntryModal({
       ...defaultData,
       [START_TEMP_RISE_FIELD.name]: false,
       ...formJson,
+      Time: temp ? defaultData["Time"] : undefined,
     });
     onHide();
     onSubmit && onSubmit();
@@ -207,6 +200,7 @@ export function PeriodEntryModal({
                 defaultValue={
                   (!isAddNewMode && defaultData.Temperature) || null
                 }
+                onChange={(e) => setTemp(e.target.value)}
               />
             </Col>
             <Col>
@@ -214,6 +208,7 @@ export function PeriodEntryModal({
                 name="Time"
                 type="time"
                 defaultValue={defaultData.Time}
+                disabled={!temp}
               />
             </Col>
           </Row>
@@ -222,8 +217,12 @@ export function PeriodEntryModal({
           {...START_TEMP_RISE_FIELD}
           defaultChecked={defaultData[START_TEMP_RISE_FIELD.name] == "on"}
         />
-        {fieldsConfig.map((f) => (
-          <FormInput {...f} />
+        {inputFieldsConfig.map((f) => (
+          <FormInput
+            {...f}
+            defaultValue={defaultData[f.name]}
+            defaultChecked={defaultData[f.name]}
+          />
         ))}
         <Button variant="primary" type="submit">
           Save
