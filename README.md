@@ -14,6 +14,18 @@ npm run dev
 
 This project is deployed using Netlify.
 
+### To build
+
+```
+netlify build
+```
+
+### To deploy
+
+```
+netlify deploy
+```
+
 ## Update Log
 
 - [x] `BUG`: Do not log time when temp taken when temp is not recorded [2023-08-07]
