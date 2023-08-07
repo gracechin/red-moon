@@ -14,6 +14,6 @@ npm run dev
 
 This project is deployed using Netlify.
 
-## Updates
+## Update Log
 
-2023-08-07 Introduce TypeScript
+- [x] `BUG`: Do not log time when temp taken when temp is not recorded [2023-08-07]
