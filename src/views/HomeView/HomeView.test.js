@@ -6,4 +6,9 @@ describe("<HomeView />", () => {
     render(<HomeView />);
     expect(screen.getByTestId("home-view")).toMatchSnapshot();
   });
+
+  it("should render navbar", () => {
+    const { getByTestId } = render(<HomeView />);
+    expect(getByTestId("navbar")).toMatchSnapshot();
+  });
 });
